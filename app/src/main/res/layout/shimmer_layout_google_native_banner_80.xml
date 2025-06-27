@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@color/ad_bg_color"
+    android:padding="5dp">
+
+    <!-- Left Image/Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/shimmer_effect_color"
+        app:cardPreventCornerOverlap="false"
+        app:strokeWidth="0dp" />
+
+    <!-- Center Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="5dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <!-- AD Tag and mini shimmer -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvAdTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_ad_tag_shimmer"
+                android:paddingVertical="2dp"
+                    android:paddingHorizontal="3dp"
+                android:text="AD"
+                android:textSize="10sp"
+                android:textColor="@color/gray1"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                android:gravity="center" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_marginStart="5dp"
+                android:background="@color/shimmer_effect_color" />
+        </LinearLayout>
+
+        <!-- Title shimmer bar -->
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginTop="3dp"
+            android:background="@color/shimmer_effect_color" />
+    </LinearLayout>
+
+    <!-- CTA Button Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/shimmer_effect_color"
+        app:strokeWidth="0dp" />
+</LinearLayout>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nativeAd"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:background="@color/ad_bg_color">
+
+    <LinearLayout
+        android:id="@+id/llMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="6dp">
+
+        <!-- Icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAdIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="6dp"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/ad_bg_color">
+
+            <ImageView
+                android:id="@+id/adIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:contentDescription="@null"
+                tools:src="@mipmap/ic_launcher" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Title + Body -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="6dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="5dp">
+
+                <!-- AD Tag -->
+                <TextView
+                    android:id="@+id/tvAdTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:paddingVertical="2dp"
+                    android:paddingHorizontal="3dp"
+                    android:background="@drawable/bg_ad_tag"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="AD"
+                    android:textSize="10sp"
+                    android:textColor="@color/ad_tag_text_color"
+                    android:includeFontPadding="false" />
+
+
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/adName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ad_text_primary_color"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    tools:text="@string/app_name" />
+            </LinearLayout>
+
+            <!-- Body -->
+            <TextView
+                android:id="@+id/adBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/ad_text_secondary_color"
+                android:maxLines="2"
+                android:fontFamily="sans-serif"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                tools:text="Download now for free and enjoy!" />
+        </LinearLayout>
+
+        <!-- CTA Button -->
+        <TextView
+            android:id="@+id/adCallToAction"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:background="@drawable/bg_ad_btn"
+            android:textColor="@color/ad_btn_primary_color"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            tools:text="INSTALL" />
+    </LinearLayout>
+</com.google.android.gms.ads.nativead.NativeAdView>

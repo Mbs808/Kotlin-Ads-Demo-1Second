@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="14dp"
+    android:layout_marginVertical="7dp"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp">
+
+        <ImageView
+            android:id="@+id/ivCountryFlag"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_hindi"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLanguageName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:textColor="@color/gray1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Hindi" />
+
+        <TextView
+            android:id="@+id/tvLanguageCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:alpha="0.6"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:textColor="@color/gray1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="(HI)" />
+
+    </LinearLayout>
+
+</LinearLayout>

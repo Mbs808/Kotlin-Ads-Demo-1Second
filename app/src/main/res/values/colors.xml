@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="app_color">#266af1</color>
+    <color name="blue">#266af1</color>
+    <color name="purple_200">#EF127A</color>
+    <color name="gray1">#6E6E6E</color>
+
+
+    <!--*********************** Ad Colors ********************************-->
+    <!-- Ad Colors -->
+    <color name="ad_bg_color">#F2F2F2</color>
+    <color name="ad_text_primary_color">#000000</color>
+    <color name="ad_btn_primary_color">#FFFFFF</color>
+    <color name="ad_tag_text_color">#FFFFFF</color>
+    <color name="ad_text_secondary_color">#8F8F8F</color>
+
+    <!-- Shimmer Effect Color -->
+    <color name="shimmer_effect_color">#C1C0C0</color>
+
+</resources>

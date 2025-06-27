@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/exitParent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_white_top_corner_5"
+    android:paddingBottom="10dp">
+
+    <RelativeLayout
+        android:id="@+id/rlNative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnTapToExit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/bg_bg"
+            android:elevation="0dp"
+            android:padding="2dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
+
+            <FrameLayout
+                android:id="@+id/textSpaceFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Space
+                    android:id="@+id/space"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:layout_marginBottom="60dp" />
+
+            </FrameLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerLayoutAd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true"
+                app:shimmer_dropoff="0.5"
+                app:shimmer_duration="1500">
+
+                <include
+                    android:id="@+id/exitShimmer"
+                    layout="@layout/shimmer_layout_google_native" />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <FrameLayout
+                android:id="@+id/flNative"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/btnTapToExit"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/bg_off_white_ripple_25"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/tap_to_exit"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Device Internet Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- Device AD_ID -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
+    <queries>
+        <package android:name="com.google.android.gm" />
+    </queries>
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.KotlinFirebaseAdsDemo"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:exported="false"
+            android:theme="@style/AdInspectorActivityTheme"
+            tools:replace="android:theme" />
+
+        <activity
+            android:name=".ui.activities.onboard.OnBoardingActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ContinueActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+
+        <activity
+            android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd60Activity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd80Activity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd100Activity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd130Activity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeAdActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.shimmer.ShimmerAdsActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.ads.interstitialad.InterstitialAdActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+        <activity
+            android:name=".ui.activities.language.LanguageActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:screenOrientation="nosensor" />
+
+        <activity
+            android:name=".ui.activities.main.MainActivity"
+            android:configChanges="uiMode"
+            android:exported="true"
+            android:screenOrientation="nosensor" />
+
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:configChanges="uiMode"
+            android:exported="true"
+            android:theme="@style/Theme.KotlinFirebaseAdsDemoSplash"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".ads.service.FirebaseMSGService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+    </application>
+
+</manifest>

@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">KotlinFirebaseAdsDemo</string>
+    <string name="splash_screen">Splash Screen</string>
+    <string name="start_loading">Start Loading</string>
+
+    <string name="no_browser_error">You don\'t have any browser to open web page</string>
+
+
+    <string name="loading">Loading…</string>
+    <string name="preparing">Preparing…</string>
+    <string name="ready_now">Ready now…</string>
+    <string name="install">Install</string>
+    <string name="select_language">Select Language</string>
+    <string name="select_language_first">Select Language First</string>
+    <string name="shimmer_ads">Shimmer Ads</string>
+    <string name="interstitial_ads">Interstitial Ads</string>
+    <string name="rate">Rate</string>
+    <string name="change_language">Change Language</string>
+    <string name="banner_ad">Banner Ad</string>
+    <string name="native_ad">Native Ad</string>
+    <string name="native_banner_ad_130">Native Banner Ad 130</string>
+    <string name="native_banner_ad_100">Native Banner Ad 100</string>
+    <string name="native_banner_ad_80">Native Banner Ad 80</string>
+    <string name="native_banner_ad_60">Native Banner Ad 60</string>
+    <string name="share_app_description">Share Our App to enjoy with you friends and family.</string>
+    <string name="tap_to_exit">Tap to exit</string>
+    <string name="restart">RESTART</string>
+    <string name="permission_needed">Permission Needed</string>
+    <string name="permission_needed_desc">Give permission to access Notification Permission, app need notification permission for app related new update.</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_required_desc">This app require permission to use Notification. Grant them in app Setting.</string>
+    <string name="open_setting">Open Setting</string>
+    <string name="request_permission">Request Permission</string>
+    <string name="permission_granted">Permission Granted</string>
+    <string name="shimmer_ads_card">shimmer\n</string>
+    <string name="get_start">Get Start</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="next">Next</string>
+
+</resources>

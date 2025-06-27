@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.activities.onboard.Fragment3">
+    <!-- AdView -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clAdView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rlNative"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ad_bg_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerLayoutAd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true"
+                app:shimmer_dropoff="0.5"
+                app:shimmer_duration="1500">
+
+                <include
+                    android:id="@+id/nativeShimmer"
+                    layout="@layout/shimmer_layout_google_native_full_onb" />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <FrameLayout
+                android:id="@+id/flNative"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

@@ -1,0 +1,71 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.KotlinFirebaseAdsDemo" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/black</item>
+        <item name="colorSecondaryVariant">@color/purple_200</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:fullDark">@color/white</item>
+        <!-- Customize your theme here. -->
+
+    </style>
+
+    <style name="Theme.KotlinFirebaseAdsDemoSplash" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/white</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/black</item>
+        <item name="colorSecondaryVariant">@color/purple_200</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="selectableItemBackground">?android:selectableItemBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:fullDark">@color/white</item>
+        <!-- Customize your theme here. -->
+
+    </style>
+
+    <style name="AdInspectorActivityTheme" parent="@android:style/Theme.Translucent">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+    </style>
+
+    <!-- Custom Dialog -->
+    <style name="CustomDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.8</item>
+        <item name="android:windowAnimationStyle">@style/CustomDialogAnimation</item>
+    </style>
+
+    <style name="CustomDialogAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_bottom</item>
+    </style>
+
+</resources>

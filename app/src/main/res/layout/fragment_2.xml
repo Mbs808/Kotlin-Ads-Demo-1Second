@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.activities.onboard.Fragment2">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:paddingHorizontal="10dp"
+        android:layout_above="@+id/llBtm"
+        android:text="OnBoarding 2nd Fragment"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/llBtm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_circle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            tools:ignore="SmallSp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_dot" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/ic_selected" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_dot" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/view_4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/ic_dot" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvNext"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackground"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/next"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="266dp"
+            android:background="@color/ad_bg_color">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/swipe" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

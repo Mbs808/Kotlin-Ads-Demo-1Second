@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686841617058",
+    "project_id": "origin-more-ads",
+    "storage_bucket": "origin-more-ads.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686841617058:android:88ccff4929d11cf92595fb",
+        "android_client_info": {
+          "package_name": "com.origin.moreads"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCz6EH77SZPjzoAmlnN7SynGbWSqOb528"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

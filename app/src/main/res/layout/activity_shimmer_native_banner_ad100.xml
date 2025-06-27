@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd100Activity">
+
+    <!-- AdView -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clAdView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/ad_bg_color"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/rlNativeBanner"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/ad_bg_color"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/flNativeBanner"
+                android:layout_width="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content" >
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerLayoutAd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:shimmer_auto_start="true"
+                    app:shimmer_dropoff="0.5"
+                    app:shimmer_duration="1500">
+
+                    <include layout="@layout/shimmer_layout_google_native_banner_100" />
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+            </FrameLayout>
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

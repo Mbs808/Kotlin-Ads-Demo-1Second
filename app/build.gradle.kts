@@ -19,9 +19,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-
-
-
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -48,7 +45,6 @@ android {
             matchingFallbacks += listOf("release")
             isDebuggable = false
         }
-
 
     }
 

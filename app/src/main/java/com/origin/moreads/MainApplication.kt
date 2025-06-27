@@ -9,6 +9,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.yariksoffice.lingver.Lingver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainApplication : Application() {
 
@@ -17,7 +20,10 @@ class MainApplication : Application() {
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext)
 
-        MobileAds.initialize(applicationContext)
+        CoroutineScope(Dispatchers.IO).launch {
+            // Initialize the Google Mobile Ads SDK on a background thread.
+            MobileAds.initialize(applicationContext) {}
+        }
 
         val languageCode = prefsHelper.languageCode
         Lingver.init(this, languageCode)
@@ -40,7 +46,6 @@ class MainApplication : Application() {
 
     companion object {
         private const val TAG = "MainApplication"
-        private const val ONE_SIGNAL_APP_ID = "dec1bfad-db7a-4265-91bd-ff3a0ac971e2"
 
         var firebaseAnalytics: FirebaseAnalytics? = null
 

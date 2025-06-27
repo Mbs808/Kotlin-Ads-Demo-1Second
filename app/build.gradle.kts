@@ -20,14 +20,7 @@ android {
     }
 
 
-//    signingConfigs {
-//        create("release") {
-//            storeFile = File("D:\\Year_2025\\adsDemo.jks")
-//            storePassword = "origin"
-//            keyAlias = "origin"
-//            keyPassword = "origin"
-//        }
-//    }
+
 
     buildTypes {
         debug {
@@ -46,7 +39,6 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-//            signingConfig = signingConfigs.getByName("release")
 
         }
 

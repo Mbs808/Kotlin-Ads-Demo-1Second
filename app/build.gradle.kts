@@ -99,6 +99,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.config)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.perf)
 
 
     // AdMob & PlayServices
@@ -114,7 +115,7 @@ dependencies {
     // Glide
     implementation(libs.glide)
 
-    // Lingver
+    // Lingver for language
     implementation(libs.lingver)
 
     // Shimmer
@@ -123,5 +124,6 @@ dependencies {
     //lottie animation
     implementation(libs.lottie)
 
+    // Consent GDPR
     implementation(libs.user.messaging.platform)
 }

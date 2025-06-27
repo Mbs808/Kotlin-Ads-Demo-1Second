@@ -39,9 +39,6 @@ class MainApplication : Application() {
                 }
                 // Get new FCM registration token
             })
-
-
-
     }
 
     companion object {
@@ -50,6 +47,4 @@ class MainApplication : Application() {
         var firebaseAnalytics: FirebaseAnalytics? = null
 
     }
-
-
 }

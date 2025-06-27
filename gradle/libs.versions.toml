@@ -52,6 +52,7 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
 
 # PlayServices Ads and AppUpdate
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version = "24.4.0" }
@@ -75,6 +76,8 @@ shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 # Beckmark
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
+
+# Consent GDPR
 user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "userMessagingPlatform" }
 
 [plugins]

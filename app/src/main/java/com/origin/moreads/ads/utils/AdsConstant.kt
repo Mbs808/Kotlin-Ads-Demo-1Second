@@ -49,6 +49,10 @@ object AdsConstant {
     var isShow_onBoarding_FullAds = "yes"
     var onBoarding_FullTimer:Long = 6000L
 
+
+     var isAdsClick = false
+
+
     /** Sub: Global Local Variables **/
     var isSplashInterCall = false
 
@@ -63,7 +67,7 @@ object AdsConstant {
     var firstTime = false
 
     /** Exit App Server Variables **/
-    var showAdsExitDialog = "yes"
+    var showAdsExitDialog = "no"
 
     /** More App Ads Server Variables **/
     var showMoreAppLanguage = "no"

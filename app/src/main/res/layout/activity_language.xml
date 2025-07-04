@@ -80,6 +80,41 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/cell_language_item" />
 
+        <LinearLayout
+            android:id="@+id/ll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:clipToPadding="false"
+            android:gravity="end|center_vertical"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingVertical="12dp"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="17dp"
+                android:layout_height="8dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="13dp"
+                android:background="@drawable/up_arrow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-2dp"
+                android:background="@drawable/lang_guide_bg"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="20dp"
+                android:singleLine="true"
+                android:paddingVertical="10dp"
+                android:text="@string/tap_home"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"

@@ -13,10 +13,13 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.origin.moreads.MainApplication
+import com.origin.moreads.ui.activities.ContinueActivity
+import com.origin.moreads.ui.activities.ContinueActivity.Companion
 
 object GoogleInterstitialAds {
 
-    private const val TAG = "GoogleInterAds"
+    private const val TAG = "InterAds"
 
     var admobInterstitial: InterstitialAd? = null
     var originalAdsShow = 0
@@ -35,37 +38,48 @@ object GoogleInterstitialAds {
     fun googleInterstitial(activity: Activity) {
 
         AdsConstant.isSplashInterCall = true
-        Log.e(TAG, "request_to_gInter_load")
+
+        Log.e("Ads_Demo", "${TAG}_request_load")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_request_load", Bundle())
 
         if (originalAdsShow == AdsConstant.googleInterMaxInterAdsShow) {
             Log.d(TAG, "return init")
             return
         }
 
-        Log.d(TAG, "init")
+
+        Log.e("Ads_Demo", "${TAG}_init")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_init", Bundle())
 
         val loadCallback = object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                Log.e("Ads_Demo", "${TAG}_onAdLoaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onAdLoaded", Bundle())
+
                 adError = false
-                Log.e(TAG, "${TAG}_loaded")
                 admobInterstitial = interstitialAd
 
                 admobInterstitial?.fullScreenContentCallback =
                     object : FullScreenContentCallback() {
                         override fun onAdDismissedFullScreenContent() {
+                            Log.e("Ads_Demo", "${TAG}_AdDismissedFull")
+                            MainApplication.firebaseAnalytics?.logEvent("${TAG}_AdDismissedFull", Bundle())
 
                             startTimer()
-                            Log.e(TAG, "${TAG}_dismissedFull")
                         }
 
                         override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                            Log.e("Ads_Demo", "${TAG}_AdFailedToShow")
+                            MainApplication.firebaseAnalytics?.logEvent("${TAG}_AdFailedToShow", Bundle())
+
                             admobInterstitial = null
                             GoogleInterstitialAds.adError = true
-                            Log.e(TAG, "${TAG}_failToShowFull$adError")
                         }
 
                         override fun onAdShowedFullScreenContent() {
-                            Log.e(TAG, "${TAG}_AdShowedFull")
+                            Log.e("Ads_Demo", "${TAG}_AdShowedFull")
+                            MainApplication.firebaseAnalytics?.logEvent("${TAG}_AdShowedFull", Bundle())
+
                             AdsConstant.firstTime = true
                             originalAdsShow++
 
@@ -76,9 +90,11 @@ object GoogleInterstitialAds {
             }
 
             override fun onAdFailedToLoad(error: LoadAdError) {
+                Log.e("Ads_Demo", "${TAG}_AdFailedToLoad$error")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_AdFailedToLoad", Bundle())
+
                 admobInterstitial = null
                 adError = true
-                Log.e(TAG, "${TAG}_AdFailed$error")
             }
         }
 
@@ -97,17 +113,26 @@ object GoogleInterstitialAds {
         Log.e(TAG, "googleInterMaxInterAdsShow_${AdsConstant.googleInterMaxInterAdsShow}")
         if (originalAdsShow == AdsConstant.googleInterMaxInterAdsShow) return
 
+        Log.e("Ads_Demo", "${TAG}_req_show_$from")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_req_show_$from", Bundle())
+
         if (!AdsConstant.firstTime && !adsShowIntervalTime) {
-            Log.e(TAG, "${TAG}_req_$from")
+
             if (admobInterstitial != null) {
+                Log.e("Ads_Demo", "${TAG}_show_$from")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_show_$from", Bundle())
+
                 admobInterstitial?.show(activity)
-                Log.e(TAG, "${TAG}_Show_$from")
-                Log.e(TAG, "${TAG}_Total_Show")
             } else {
-                Log.e(TAG, "${TAG}_First_ex_show")
+
+                Log.e("Ads_Demo", "${TAG}_First_ex_show")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_First_ex_show", Bundle())
+
                 if (AdsUtils.isConnected(activity)) {
                     if (adError) {
-                        Log.e(TAG, "${TAG}_show_$from")
+                        Log.e("Ads_Demo", "${TAG}_error_load_again")
+                        MainApplication.firebaseAnalytics?.logEvent("${TAG}_error_load_again", Bundle())
+
                         googleInterstitial(activity)
                     }
                 }
@@ -115,10 +140,13 @@ object GoogleInterstitialAds {
         } else {
             adsClick++
             Log.d(TAG, "adsClick_$adsClick")
+
             if (admobInterstitial != null) {
 
                 if (adsShowOrNot()) {
-                    Log.e(TAG, "${TAG}_Show_else_$from")
+                    Log.e("Ads_Demo", "${TAG}_Show_else_$from")
+                    MainApplication.firebaseAnalytics?.logEvent("${TAG}_Show_else_$from", Bundle())
+
                     admobInterstitial?.show(activity)
                 }
             } else {
@@ -127,7 +155,8 @@ object GoogleInterstitialAds {
                 }
                 if (AdsUtils.isConnected(activity)) {
                     if (adError) {
-                        Log.e(TAG, "${TAG}_req_second_load_$from")
+                        Log.e("Ads_Demo", "${TAG}_req_second_load_$from")
+                        MainApplication.firebaseAnalytics?.logEvent("${TAG}_req_second_load_$from", Bundle())
                         googleInterstitial(activity)
                     }
                 }
@@ -139,10 +168,15 @@ object GoogleInterstitialAds {
     private fun adsShowOrNot(): Boolean {
         return if (!adsShowIntervalTime && adsClick > AdsConstant.googleInterGapBetweenTwoInter && originalAdsShow != AdsConstant.googleInterMaxInterAdsShow) {
             adsClick = 0
-            Log.d(TAG, "${TAG}_adsShowOrNot: true")
+
+            Log.e("Ads_Demo", "${TAG}_adsShowOrNot_true")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_adsShowOrNot_true", Bundle())
+
             true
         } else {
-            Log.d(TAG, "${TAG}__adsShowOrNot_false")
+            Log.e("Ads_Demo", "${TAG}_adsShowOrNot_false")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_adsShowOrNot_false", Bundle())
+
             false
         }
     }

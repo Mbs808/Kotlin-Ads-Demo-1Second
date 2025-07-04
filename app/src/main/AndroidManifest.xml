@@ -27,12 +27,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
+        <!-- For use remove fullscreen inter ads -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:exported="false"
             android:theme="@style/AdInspectorActivityTheme"
             tools:replace="android:theme" />
-
         <activity
             android:name=".ui.activities.onboard.OnBoardingActivity"
             android:configChanges="uiMode"
@@ -93,19 +93,17 @@
             android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
-
         <activity
             android:name=".ui.activities.main.MainActivity"
             android:configChanges="uiMode"
             android:exported="true"
             android:screenOrientation="nosensor" />
-
         <activity
             android:name=".ui.activities.SplashActivity"
             android:configChanges="uiMode"
             android:exported="true"
-            android:theme="@style/Theme.KotlinFirebaseAdsDemoSplash"
-            android:screenOrientation="nosensor">
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.KotlinFirebaseAdsDemoSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

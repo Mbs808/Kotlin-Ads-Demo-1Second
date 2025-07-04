@@ -11,10 +11,11 @@ import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
+import com.origin.moreads.MainApplication
+import com.origin.moreads.ui.activities.main.MainActivity
+import com.origin.moreads.ui.activities.main.MainActivity.Companion
 
 object AdsLoaded {
-
-    private const val TAG = "AdLoaded"
 
     /** Unified Native Ads Loaded Variables **/
     var languageUnifiedNativeAds: NativeAd? = null
@@ -31,7 +32,9 @@ object AdsLoaded {
     }
 
     fun loadGoogleNativeAd(context: Context, adId: String, nativeAdReference: (NativeAd?) -> Unit) {
-        Log.d("lanugage---", "splash---" + "load start")
+        Log.e("Ads_Demo", "AdsLoaded_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("AdsLoaded_LoadStart", Bundle())
+
         val builder = AdLoader.Builder(context, adId).forNativeAd { nativeAd ->
             nativeAdReference(nativeAd)
         }
@@ -39,19 +42,23 @@ object AdsLoaded {
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 super.onAdFailedToLoad(loadAdError)
-                Log.d("lanugage---", "splash---" + "load failed")
+                Log.e("Ads_Demo", "AdsLoaded_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("AdsLoaded_Fail", Bundle())
+
                 nativeAdReference(null)
-                Log.e(TAG, "loadGoogleNativeAd_failed" + loadAdError.code)
             }
 
             override fun onAdLoaded() {
                 super.onAdLoaded()
-                Log.d("lanugage---", "splash---" + "load loaded")
-                Log.e(TAG, "loadGoogleNativeAd_loaded")
+                Log.e("Ads_Demo", "AdsLoaded_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("AdsLoaded_Loaded", Bundle())
             }
 
             override fun onAdClicked() {
+                Log.e("Ads_Demo", "AdsLoaded_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("AdsLoaded_Clicked", Bundle())
 
+                AdsConstant.isAdsClick = true
             }
         }).build()
         adLoader.loadAd(getAdRequest())

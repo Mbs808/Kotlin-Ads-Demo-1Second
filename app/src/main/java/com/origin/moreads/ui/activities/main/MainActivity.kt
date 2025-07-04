@@ -16,26 +16,21 @@ import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.Space
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -74,7 +69,6 @@ import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.ui.activities.language.LanguageActivity
 import com.origin.moreads.ui.dialogs.OpenSettingDialog
 import com.origin.moreads.ui.dialogs.PermissionNeededDialog
-import com.origin.moreads.utils.Global
 import com.origin.moreads.utils.IS_FROM
 import com.origin.moreads.utils.PERMISSION_REQUEST_NOTIFICATION_ARRAY
 import com.origin.moreads.utils.PERMISSION_REQUEST_NOTIFICATION_LIST
@@ -150,6 +144,7 @@ class MainActivity : BaseActivity() {
         initializeViews()
         setOnClickListener()
         loadAdForExitDialog()
+
         setHomeAdView()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -158,9 +153,23 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        editAdsDialog()
+        exitAdsDialogInit()
 
-        Log.e(LOG_TAG, "${TAG}_onCreate")
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.e("Ads_Demo", "${TAG}_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
+
+                if (AdsConstant.showAdsExitDialog == "yes") {
+                    showExitAdsDialog()
+                } else {
+                    exitMoreAdsDialogInit()
+                }
+            }
+        })
+
+        Log.e("Ads_Demo", "${TAG}_onCreate")
         MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
 
     }
@@ -371,33 +380,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_BACK -> {
-                Log.e(LOG_TAG, "${TAG}_onBackPressed")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
-
-                if (AdsConstant.showAdsExitDialog == "yes") {
-                    /*exitDialogWithAd = ExitDialogWithAd(
-                        this,
-                        onDialogDismiss = {},
-                        onDialogShow = {}
-                    )
-                    exitDialogWithAd?.show(supportFragmentManager, exitDialogWithAd?.tag)*/
-                    showExitAdsDialog()
-//                    editAdsDialog()
-                } else {
-                    finishAffinity()
-                }
-                return true
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-
     override fun onResume() {
         super.onResume()
+        Log.e("Ads_Demo", "${TAG}_onResume")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onResume", Bundle())
+
 
         appUpdateManager?.let { updateManager ->
             updateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -428,16 +415,13 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
-
-        if (Global.isSharing || Global.isGoingOutside) {
-            Global.isSharing = false
-            Global.isGoingOutside = false
-        }
-
     }
 
     override fun onStop() {
         super.onStop()
+        Log.e("Ads_Demo", "${TAG}_onStop")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onStop", Bundle())
+
         appUpdateManager?.unregisterListener(statusUpdateListener)
     }
 
@@ -450,21 +434,31 @@ class MainActivity : BaseActivity() {
 
     //exit dialog
     private var exitAdsDialog: Dialog? = null
-    private lateinit var rlNative: RelativeLayout
-    private lateinit var textSpaceFrame: FrameLayout
-    private lateinit var space: Space
     private lateinit var flNative: FrameLayout
+    private lateinit var btnTapToExit: TextView
 
     // Shimmer Included Layout
     private var shimmerAdMediaHolder: View? = null
     private var shimmerLayoutAd: ShimmerFrameLayout? = null
 
-    private lateinit var btnTapToExit: TextView
+
+    //exit more dialog
+    private var exitMoreAdsDialog: Dialog? = null
+    private lateinit var flNativeMore: FrameLayout
+    private lateinit var btnTapToExitMore: TextView
+
+    // Shimmer Included Layout
+    private var shimmerAdMediaHolderMore: View? = null
+    private var shimmerLayoutAdMore: ShimmerFrameLayout? = null
+
 
     private var mHeight = 0
 
-    private fun editAdsDialog() {
+    private fun exitAdsDialogInit() {
         exitAdsDialog = Dialog(this).apply {
+            Log.e("Ads_Demo", "${TAG}_exitAdsDigInit")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_exitAdsDigInit", Bundle())
+
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(R.layout.dialog_exit_with_ad)
             window?.apply {
@@ -477,17 +471,11 @@ class MainActivity : BaseActivity() {
             }
             setCancelable(true)
             setCanceledOnTouchOutside(true)
-//            show()
 
             // Initialize Views
-            rlNative = findViewById(R.id.rlNative)
-            textSpaceFrame = findViewById(R.id.textSpaceFrame)
-            space = findViewById(R.id.space)
             flNative = findViewById(R.id.flNative)
-
             shimmerAdMediaHolder = findViewById(R.id.shimmerAdMediaHolder)
             shimmerLayoutAd = findViewById(R.id.shimmerLayoutAd)
-
             btnTapToExit = findViewById(R.id.btnTapToExit)
 
             // Load Ad View
@@ -502,6 +490,84 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun exitMoreAdsDialogInit() {
+        exitMoreAdsDialog = Dialog(this).apply {
+            Log.e("Ads_Demo", "${TAG}_exitMoreAdsInit")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_exitMoreAdsInit", Bundle())
+
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(R.layout.dialog_exit_with_more_ad)
+            window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setLayout(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                setGravity(Gravity.BOTTOM)
+            }
+
+            setCancelable(true)
+            setCanceledOnTouchOutside(true)
+            show()
+
+            // Initialize Views
+            flNativeMore = findViewById(R.id.flNative)
+            shimmerAdMediaHolderMore = findViewById(R.id.shimmerAdMediaHolder)
+            shimmerLayoutAdMore = findViewById(R.id.shimmerLayoutAd)
+            btnTapToExitMore = findViewById(R.id.btnTapToExit)
+
+            // Exit button click
+            btnTapToExitMore.setOnClickListener {
+//                SplashOpenAds.appOpenAd = null
+                dismiss()
+                finishAffinity()
+            }
+
+            // Load More Ad View
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            mHeight = displayMetrics.heightPixels
+            val paramsShimmerMediaHolder = shimmerAdMediaHolderMore?.layoutParams
+
+            if (mHeight / 5 > 300) {
+                paramsShimmerMediaHolder?.height = mHeight / 5
+            } else {
+                paramsShimmerMediaHolder?.height = 300
+            }
+
+            paramsShimmerMediaHolder?.width = ViewGroup.LayoutParams.MATCH_PARENT
+            shimmerAdMediaHolderMore?.layoutParams = paramsShimmerMediaHolder
+
+            if (AdsConstant.moreAppDataList.isNotEmpty()) {
+                shimmerLayoutAdMore?.let {
+                    loadMoreAppNativeAd(
+                        this@MainActivity,
+                        flNativeMore,
+                        it
+                    )
+                }
+            } else {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (AdsConstant.moreAppDataList.isNotEmpty()) {
+                        if (!isFinishing) {
+                            shimmerLayoutAdMore?.let {
+                                loadMoreAppNativeAd(
+                                    this@MainActivity,
+                                    flNativeMore,
+                                    it
+                                )
+                            }
+                        }
+                    } else {
+                        shimmerLayoutAdMore?.stopShimmer()
+                    }
+                }, 3000)
+
+            }
+
+        }
+    }
+
     private fun showExitAdsDialog() {
         if (exitAdsDialog != null && !exitAdsDialog!!.isShowing) {
             exitAdsDialog?.show()
@@ -511,55 +577,51 @@ class MainActivity : BaseActivity() {
         }
     }
 
-
     private fun setAdView() {
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         mHeight = displayMetrics.heightPixels
-        val params = space.layoutParams
-        params.height = mHeight / 5
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT
-        space.layoutParams = params
-
         val paramsShimmerMediaHolder = shimmerAdMediaHolder?.layoutParams
+
         if (mHeight / 5 > 300) {
             paramsShimmerMediaHolder?.height = mHeight / 5
         } else {
             paramsShimmerMediaHolder?.height = 300
         }
+
         paramsShimmerMediaHolder?.width = ViewGroup.LayoutParams.MATCH_PARENT
         shimmerAdMediaHolder?.layoutParams = paramsShimmerMediaHolder
 
-        if (AdsConstant.onlyShowMoreAppNative == "yes") {
-            if (AdsConstant.moreAppDataList.size > 0) {
-                shimmerLayoutAd?.let {
-                    loadMoreAppNativeAd(
-                        this,
-                        flNative,
-                        it
-                    )
+        if (AdsConstant.showAdsExitDialog == "yes") {
+            if (AdsConstant.onlyShowMoreAppNative == "yes") {
+                if (AdsConstant.moreAppDataList.size > 0) {
+                    shimmerLayoutAd?.let {
+                        loadMoreAppNativeAd(
+                            this,
+                            flNative,
+                            it
+                        )
+                    }
+                } else {
+                    shimmerLayoutAd?.stopShimmer()
                 }
             } else {
-
-                shimmerLayoutAd?.stopShimmer()
-
-//                tvAdText.visible()
-            }
-        } else {
-            if (AdsLoaded.exitDialogUnifiedNativeAds != null) {
-                showNativeBanner(
-                    activity = this,
-                    frameLayout = flNative,
-                    nativeAd = AdsLoaded.exitDialogUnifiedNativeAds!!
-                )
-            } else {
-                googleNativeAd(
-                    activity = this,
-                    adID = AdsConstant.nativeExitDialogAds,
-                    frameLayout = flNative
-                )
+                if (AdsLoaded.exitDialogUnifiedNativeAds != null) {
+                    showNativeExit(
+                        activity = this,
+                        frameLayout = flNative,
+                        nativeAd = AdsLoaded.exitDialogUnifiedNativeAds!!
+                    )
+                } else {
+                    googleNativeExitAd(
+                        activity = this,
+                        adID = AdsConstant.nativeExitDialogAds,
+                        frameLayout = flNative
+                    )
+                }
             }
         }
+
     }
 
     private fun getAddRequest(): AdRequest {
@@ -568,28 +630,32 @@ class MainActivity : BaseActivity() {
         return AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras).build()
     }
 
-    fun googleNativeAd(
+    fun googleNativeExitAd(
         activity: Activity,
         adID: String,
         frameLayout: FrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_NativeExit_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeExit_LoadStart", Bundle())
+
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             AdsLoaded.exitDialogUnifiedNativeAds = nativeAd
             Log.e(TAG, "${TAG}_onNativeAdLoaded")
             shimmerLayoutAd?.visibility = View.GONE
-            showNativeBanner(activity, frameLayout, nativeAd)
+            showNativeExit(activity, frameLayout, nativeAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(TAG, "${TAG}_onAdFailedToLoad_$loadAdError")
-                Log.e("TAG", "onAdFailedToLoad: 000 loadAdError ::   $loadAdError")
+                Log.e("Ads_Demo", "${TAG}_NativeExit_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeExit_Fail", Bundle())
 
                 if (AdsConstant.showMoreAppNative == "yes") {
                     if (AdsConstant.moreAppDataList.isNotEmpty()) {
-                        shimmerLayoutAd?.let { loadMoreAppNativeAd(activity, frameLayout, it) }
+                        if (!activity.isFinishing) {
+                            shimmerLayoutAd?.let { loadMoreAppNativeAd(activity, frameLayout, it) }
+                        }
                     } else {
-                        Log.e("TAG", "onAdFailedToLoad: 000")
                         Handler(Looper.getMainLooper()).postDelayed({
                             if (AdsConstant.moreAppDataList.isNotEmpty()) {
                                 if (!activity.isFinishing) {
@@ -608,7 +674,6 @@ class MainActivity : BaseActivity() {
 
                     }
                 } else {
-                    Log.e("TAG", "onAdFailedToLoad: 000 loadAdError ::   $loadAdError")
                     shimmerLayoutAd?.stopShimmer()
                 }
 
@@ -616,14 +681,18 @@ class MainActivity : BaseActivity() {
             }
 
             override fun onAdLoaded() {
+                Log.e("Ads_Demo", "${TAG}_NativeExit_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeExit_Loaded", Bundle())
+
                 shimmerLayoutAd?.visibility = View.GONE
-//                tvAdText.visibility = View.GONE
             }
 
             override fun onAdClicked() {
+                Log.e("Ads_Demo", "${TAG}_NativeExit_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeExit_Clicked", Bundle())
+
                 AdsLoaded.exitDialogUnifiedNativeAds = null
-                Log.e(TAG, "${TAG}_onAdClicked")
-                googleNativeAd(activity, adID, frameLayout)
+                googleNativeExitAd(activity, adID, frameLayout)
             }
         }).build()
 
@@ -631,11 +700,14 @@ class MainActivity : BaseActivity() {
         adLoader.loadAd(request)
     }
 
-    private fun showNativeBanner(
+    private fun showNativeExit(
         activity: Activity,
         frameLayout: FrameLayout,
         nativeAd: NativeAd
     ) {
+        Log.e("Ads_Demo", "${TAG}_NativeExit_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeExit_Show", Bundle())
+
         shimmerLayoutAd?.visibility = View.GONE
         val adView = activity.layoutInflater.inflate(
             R.layout.google_native_ad_view,
@@ -709,6 +781,9 @@ class MainActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayoutAd: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_More_Native_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_Native_LoadStart", Bundle())
+
         shimmerLayoutAd.visibility = View.GONE
 
         val view = activity.layoutInflater.inflate(
@@ -740,11 +815,13 @@ class MainActivity : BaseActivity() {
         adBodyClone.text = AdsConstant.moreAppDataList[number].appDescription
 
         val adMediaCloneParam = adMediaClone.layoutParams
+
         if (mHeight / 5 > 300) {
             adMediaCloneParam.height = mHeight / 5
         } else {
             adMediaCloneParam.height = 300
         }
+
         adMediaCloneParam.width = ViewGroup.LayoutParams.MATCH_PARENT
         adMediaClone.layoutParams = adMediaCloneParam
 
@@ -756,15 +833,21 @@ class MainActivity : BaseActivity() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adMediaClone.setOnClickListener {
-            Log.e(TAG, "loadMoreAppNativeAd_click")
+            Log.e("Ads_Demo", "${TAG}_More_Native_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_Native_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
-            Log.e(TAG, "loadMoreAppNativeAd_click")
+            Log.e("Ads_Demo", "${TAG}_More_Native_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_Native_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
-        Log.e(TAG, "loadMoreAppNativeAd_show")
+
+        Log.e("Ads_Demo", "${TAG}_More_Native_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_Native_Show", Bundle())
     }
 
     private fun showAdClick(activity: Activity, link: String) {
@@ -781,10 +864,6 @@ class MainActivity : BaseActivity() {
      **/
 
     private fun setHomeAdView() {
-        Log.e(
-            TAG,
-            "setHomeAdView:::-----showNativeBannerShimmer80--------------${AdsConstant.showNativeBannerShimmer80}",
-        )
         if (AdsConstant.showNativeBannerShimmer80 == "yes") {
             if (AdsConstant.onlyShowMoreAppNativeBanner == "yes") {
                 if (AdsConstant.moreAppDataList.size > 0) {
@@ -816,14 +895,19 @@ class MainActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
-        val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
 
+        Log.e("Ads_Demo", "${TAG}_NativeBanner_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_LoadStart", Bundle())
+
+        val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             shimmerLayout.visibility = View.GONE
-            showNativeBanner(activity, frameLayout, shimmerLayout, nativeAd)
+            showNativeExit(activity, frameLayout, shimmerLayout, nativeAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                Log.e("Ads_Demo", "${TAG}_NativeBanner_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Fail", Bundle())
 
                 if (AdsConstant.showMoreAppNativeBanner == "yes") {
                     if (AdsConstant.moreAppDataList.isNotEmpty()) {
@@ -847,10 +931,15 @@ class MainActivity : BaseActivity() {
             }
 
             override fun onAdLoaded() {
+                Log.e("Ads_Demo", "${TAG}_NativeBanner_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Loaded", Bundle())
+
                 shimmerLayout.visibility = View.GONE
             }
 
             override fun onAdClicked() {
+                Log.e("Ads_Demo", "${TAG}_NativeBanner_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Clicked", Bundle())
 
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
@@ -860,13 +949,17 @@ class MainActivity : BaseActivity() {
         adLoader.loadAd(request)
     }
 
-    private fun showNativeBanner(
+    private fun showNativeExit(
         activity: Activity,
         frameLayout: FrameLayout,
 
         shimmerLayout: ShimmerFrameLayout,
         nativeAd: NativeAd
     ) {
+
+        Log.e("Ads_Demo", "${TAG}_NativeBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Show", Bundle())
+
         shimmerLayout.visibility = View.GONE
 
         val adView = activity.layoutInflater.inflate(
@@ -920,6 +1013,9 @@ class MainActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Load")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Load", Bundle())
+
         shimmerLayout.visibility = View.GONE
         val view = activity.layoutInflater.inflate(
             R.layout.google_native_banner_ad_view_80_clone,
@@ -951,26 +1047,35 @@ class MainActivity : BaseActivity() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adIconClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adNameClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adBodyClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
-        Log.e(LOG_TAG, "MoreAppNativeBannerAd_load")
+
+        Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Show", Bundle())
+
     }
-
-
 }

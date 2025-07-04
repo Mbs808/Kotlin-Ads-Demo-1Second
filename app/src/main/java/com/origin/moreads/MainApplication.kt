@@ -2,13 +2,11 @@ package com.origin.moreads
 
 import android.app.Application
 import android.util.Log
-import com.origin.moreads.extensions.prefsHelper
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
-import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,12 +20,8 @@ class MainApplication : Application() {
 
         // Initialize the Google Mobile Ads SDK on a background thread.
         CoroutineScope(Dispatchers.IO).launch {
-            // Initialize the Google Mobile Ads SDK on a background thread.
             MobileAds.initialize(applicationContext) {}
         }
-
-        val languageCode = prefsHelper.languageCode
-        Lingver.init(this, languageCode)
 
         FirebaseApp.initializeApp(applicationContext)
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
@@ -46,6 +40,5 @@ class MainApplication : Application() {
         private const val TAG = "MainApplication"
 
         var firebaseAnalytics: FirebaseAnalytics? = null
-
     }
 }

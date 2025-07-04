@@ -11,10 +11,9 @@ import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
+import com.origin.moreads.MainApplication
 
 object OnBoardingFirstAd {
-
-    private const val TAG = "AdLoaded"
 
     /** Unified Native Ads Loaded Variables **/
     var onB1NativeAds: NativeAd? = null
@@ -30,7 +29,9 @@ object OnBoardingFirstAd {
     }
 
     fun loadGoogleNativeAd(context: Context, adId: String, nativeAdReference: (NativeAd?) -> Unit) {
-        Log.e("onBoarding", "OnBoardingFirstAd------load start----" )
+        Log.e("Ads_Demo", "onBAFirst_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("onBAFirst_LoadStart", Bundle())
+
         val builder = AdLoader.Builder(context, adId).forNativeAd { nativeAd ->
             nativeAdReference(nativeAd)
         }
@@ -38,19 +39,24 @@ object OnBoardingFirstAd {
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 super.onAdFailedToLoad(loadAdError)
-                Log.e("onBoarding", "OnBoardingFirstAd------onAdFailedToLoad----$loadAdError" )
+                Log.e("Ads_Demo", "onBAFirst_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("onBAFirst_Fail", Bundle())
+
 
                 nativeAdReference(null)
             }
 
             override fun onAdLoaded() {
                 super.onAdLoaded()
-                Log.e("onBoarding", "OnBoardingFirstAd------onAdLoaded----" )
+                Log.e("Ads_Demo", "onBAFirst_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("onBAFirst_Loaded", Bundle())
+
 
             }
 
             override fun onAdClicked() {
-
+                Log.e("Ads_Demo", "onBAFirst_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("onBAFirst_Clicked", Bundle())
             }
         }).build()
         adLoader.loadAd(getAdRequest())

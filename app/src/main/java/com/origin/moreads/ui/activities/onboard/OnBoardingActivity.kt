@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.adsload.OnBoardingSecondAd
 import com.origin.moreads.ads.utils.AdsConstant
@@ -17,6 +18,10 @@ import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.ui.activities.main.MainActivity
 
 class OnBoardingActivity : BaseActivity() {
+
+    companion object {
+        private const val TAG = "OnBoardingAct"
+    }
 
     var viewPager: ViewPager2? = null
     var adapter: ViewPagerAdapter? = null
@@ -36,13 +41,13 @@ class OnBoardingActivity : BaseActivity() {
 
         prefsHelper.isOnBoardingDone = true
 
-        loadAds()
+        load2Ads()
 
         viewPager = findViewById(R.id.viewpager)
 
-        val shouldShow= AdsConstant.isShow_onBoarding_FullAds == "yes"
+        val shouldShow = AdsConstant.isShow_onBoarding_FullAds == "yes"
 
-        adapter = ViewPagerAdapter(this,shouldShow)
+        adapter = ViewPagerAdapter(this, shouldShow)
 
         viewPager?.adapter = adapter
 
@@ -62,9 +67,16 @@ class OnBoardingActivity : BaseActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                Log.e("Ads_Demo", "${TAG}_onBack")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBack", Bundle())
+
                 moveToNextPage()
             }
         })
+
+        Log.e("Ads_Demo", "${TAG}_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
+
     }
 
     fun moveToNextPage() {
@@ -76,7 +88,7 @@ class OnBoardingActivity : BaseActivity() {
         }
     }
 
-    private fun loadAds() {
+    private fun load2Ads() {
         //preload native onboarding
         if (AdsConstant.isShow_onBoarding_2Ads == "yes") {
             if (!OnBoardingSecondAd.isLoadingInOnBoarding) {
@@ -111,6 +123,9 @@ class OnBoardingActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e("Ads_Demo", "${TAG}_onDestroy")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onDestroy", Bundle())
+
         stopAutoNavigateTimer()
     }
 }

@@ -15,23 +15,24 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.airbnb.lottie.LottieAnimationView
+import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.adsload.AdsLoaded
 import com.origin.moreads.ads.utils.AdsConstant
-import com.origin.moreads.ads.utils.SharedPreferenceHelper
 import com.origin.moreads.extensions.prefsHelper
 import com.origin.moreads.extensions.startIntent
-import com.origin.moreads.ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.ui.activities.language.LanguageActivity
 
 class ContinueActivity : BaseActivity() {
+    companion object {
+        private const val TAG = "ContinueAct"
+    }
 
     var tvPolicy: TextView? = null
     var continueLottie: LottieAnimationView? = null
@@ -39,7 +40,6 @@ class ContinueActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
         setContentView(R.layout.activity_continue)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -61,25 +61,25 @@ class ContinueActivity : BaseActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                Log.e("Ads_Demo", "${TAG}_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
+
                 startIntent(LanguageActivity::class.java)
                 finish()
             }
         })
+
+        Log.e("Ads_Demo", "${TAG}_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
     }
 
     private fun loadLanguageScreenAds() {
-        Log.e("TAG", "loadLanguageScreenAds::::-----------isLoadingInLanguage---------${AdsLoaded.isLoadingInLanguage} ", )
-        Log.e("TAG", "loadLanguageScreenAds::::-----------showLanguageNativeAd---------${AdsConstant.showLanguageNativeAd} ", )
-        Log.e("TAG", "loadLanguageScreenAds::::-----------isLanguageSelected---------${prefsHelper.isLanguageSelected} ", )
-        Log.e("TAG", "loadLanguageScreenAds::::-----------onlyShowMoreAppLanguage---------${AdsConstant.onlyShowMoreAppLanguage} ", )
 
         if (!AdsLoaded.isLoadingInLanguage) {
             if (AdsConstant.showLanguageNativeAd == "yes") {
                 if (!prefsHelper.isLanguageSelected) {
                     if (AdsConstant.onlyShowMoreAppLanguage != "yes") {
-                        Log.d("lanugage---", "splash---" + "bbbb")
                         if (AdsConstant.showBigNativeLanguage == "yes") {
-                            Log.d("lanugage---", "splash---" + "ccc")
                             AdsLoaded.isLanguageLoadingInSplash = true
                             AdsLoaded.loadGoogleNativeAd(
                                 this,
@@ -93,7 +93,6 @@ class ContinueActivity : BaseActivity() {
                                     nativeAd != null
                             }
                         } else {
-                            Log.d("lanugage---", "splash---" + "dddd")
                             AdsLoaded.isLanguageLoadingInSplash = true
                             AdsLoaded.loadGoogleNativeAd(
                                 this,

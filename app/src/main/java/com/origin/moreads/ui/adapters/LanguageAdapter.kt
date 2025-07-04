@@ -59,21 +59,6 @@ class LanguageAdapter(
                 else R.drawable.lang_unselected_bg
             )
 
-//            tvLanguageName.setTextColor(
-//                if (data.languageCode == languageCode) {
-//                    context.color(R.color.white)
-//                } else {
-//                    context.color(R.color.black)
-//                }
-//            )
-
-//            tvLanguageCode.setTextColor(
-//                if (data.languageCode == languageCode) {
-//                    context.color(R.color.white)
-//                } else {
-//                    context.color(R.color.black)
-//                }
-//            )
 
             ivCountryFlag.setImageResource(data.countryFlag)
             tvLanguageName.text = data.languageName

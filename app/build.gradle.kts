@@ -65,7 +65,6 @@ android {
             enableSplit = false
         }
     }
-
 }
 
 dependencies {
@@ -110,9 +109,6 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-
-    // Lingver for language
-    implementation(libs.lingver)
 
     // Shimmer
     implementation(libs.shimmer)

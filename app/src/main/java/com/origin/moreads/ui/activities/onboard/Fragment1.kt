@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.adsload.OnBoardingFirstAd
 import com.origin.moreads.ads.utils.AdsConstant
@@ -117,6 +119,9 @@ class Fragment1 : Fragment() {
         frameLayout: FrameLayout
     ) {
 
+        Log.e("Ads_Demo", "${TAG}_load_start_NativeAd")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_load_start_NativeAd", Bundle())
+
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             OnBoardingFirstAd.onB1NativeAds = nativeAd
             shimmerLayoutAd.visibility = View.GONE
@@ -126,6 +131,9 @@ class Fragment1 : Fragment() {
         val adLoader = builder.withAdListener(object : AdListener() {
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Fail", Bundle())
+
                 OnBoardingFirstAd.onB1NativeAds = null
 
                 if (AdsConstant.showMoreAppNative == "yes") {
@@ -144,11 +152,15 @@ class Fragment1 : Fragment() {
             }
 
             override fun onAdLoaded() {
-
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Loaded", Bundle())
                 shimmerLayoutAd.visibility = View.GONE
             }
 
             override fun onAdClicked() {
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Clicked", Bundle())
+
                 OnBoardingFirstAd.onB1NativeAds = null
             }
         }).build()
@@ -168,6 +180,9 @@ class Fragment1 : Fragment() {
         frameLayout: FrameLayout,
         shimmerLayoutAd: ShimmerFrameLayout
     ) {
+
+        Log.e("Ads_Demo", "${TAG}_NativeAd_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Show", Bundle())
 
         shimmerLayoutAd.visibility = View.GONE
 
@@ -237,6 +252,9 @@ class Fragment1 : Fragment() {
         activity: Activity,
         frameLayout: FrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_Load_More_NativeAd")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_Load_More_NativeAd", Bundle())
+
         val view = activity.layoutInflater.inflate(
             R.layout.google_native_ad_view_clone_onb,
             activity.findViewById(R.id.nativeAd),
@@ -274,13 +292,21 @@ class Fragment1 : Fragment() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adMediaClone.setOnClickListener {
+            Log.e("Ads_Demo", "${TAG}_More_NativeAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_NativeAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
+            Log.e("Ads_Demo", "${TAG}_More_NativeAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_NativeAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
+        Log.e("Ads_Demo", "${TAG}_More_NativeAd_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_More_NativeAd_Show", Bundle())
     }
 
     private fun showAdClick(activity: Activity, link: String) {
@@ -293,6 +319,6 @@ class Fragment1 : Fragment() {
     }
 
     companion object {
-
+        private const val TAG = "OnBOA1"
     }
 }

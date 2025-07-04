@@ -3,7 +3,6 @@ package com.origin.moreads.ui.activities.ads.shimmer.nativead
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -13,12 +12,8 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
-import com.origin.moreads.MainApplication
-import com.origin.moreads.R
-import com.origin.moreads.ads.utils.AdsConstant
-import com.origin.moreads.extensions.gone
-import com.origin.moreads.ui.activities.language.BaseActivity
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
@@ -27,6 +22,11 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.origin.moreads.MainApplication
+import com.origin.moreads.R
+import com.origin.moreads.ads.utils.AdsConstant
+import com.origin.moreads.extensions.gone
+import com.origin.moreads.ui.activities.language.BaseActivity
 
 class ShimmerNativeBannerAd60Activity : BaseActivity() {
 
@@ -98,15 +98,19 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}NTBanner_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}NTBanner_LoadStart", Bundle())
+
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
-            Log.e(LOG_TAG, "googleNativeBannerAd_onAdLoaded")
             shimmerLayout.visibility = View.GONE
             showNativeBanner(activity, frameLayout, shimmerLayout, nativeAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(LOG_TAG, "googleNativeBannerAd_onAdFailedToLoad$loadAdError")
+                Log.e("Ads_Demo", "${TAG}NTBanner_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}NTBanner_LoadStart", Bundle())
+
                 if (AdsConstant.showMoreAppNativeBanner == "yes") {
                     if (AdsConstant.moreAppDataList.size > 0) {
                         if (!activity.isFinishing) {
@@ -125,11 +129,15 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
             }
 
             override fun onAdLoaded() {
+                Log.e("Ads_Demo", "${TAG}NTBanner_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}NTBanner_Loaded", Bundle())
+
                 shimmerLayout.visibility = View.GONE
             }
 
             override fun onAdClicked() {
-                Log.e(LOG_TAG, "googleNativeBannerAd_onAdClicked")
+                Log.e("Ads_Demo", "${TAG}NTBanner_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}NTBanner_Clicked", Bundle())
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
         }).build()
@@ -144,6 +152,9 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
         shimmerLayout: ShimmerFrameLayout,
         nativeAd: NativeAd
     ) {
+        Log.e("Ads_Demo", "${TAG}NTBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}NTBanner_Show", Bundle())
+
         shimmerLayout.visibility = View.GONE
 
         val adView = activity.layoutInflater.inflate(
@@ -197,6 +208,9 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}More_NTBanner_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_LoadStart", Bundle())
+
         shimmerLayout.visibility = View.GONE
         val view = activity.layoutInflater.inflate(
             R.layout.google_native_banner_ad_view_60_clone,
@@ -228,33 +242,41 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adIconClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}More_NTBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adNameClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}More_NTBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_Click", Bundle())
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adBodyClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}More_NTBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_Click", Bundle())
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}More_NTBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_Click", Bundle())
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
-        Log.e(LOG_TAG, "MoreAppNativeBannerAd_load")
+
+        Log.e("Ads_Demo", "${TAG}More_NTBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}More_NTBanner_Show", Bundle())
+
     }
 
     private fun showAdClick(activity: Activity, link: String) {
         try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+            activity.startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+            activity.startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
         }
     }
 

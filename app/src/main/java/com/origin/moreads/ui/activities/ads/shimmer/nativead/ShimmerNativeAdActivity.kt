@@ -29,7 +29,10 @@ import com.google.android.gms.ads.nativead.NativeAdView
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.utils.AdsConstant
+import com.origin.moreads.ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity
+import com.origin.moreads.ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity.Companion
 import com.origin.moreads.ui.activities.language.BaseActivity
+import androidx.core.net.toUri
 
 class ShimmerNativeAdActivity : BaseActivity() {
 
@@ -120,15 +123,20 @@ class ShimmerNativeAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_NativeAd_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_LoadStart", Bundle())
+
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
-            Log.e(LOG_TAG, "${TAG}_Native_onAdLoaded")
             shimmerLayout.visibility = View.GONE
             showNativeBanner(activity, frameLayout, shimmerLayout, nativeAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(LOG_TAG, "${TAG}_Native_onAdFailedToLoad_$loadAdError")
+
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Fail", Bundle())
+
                 if (AdsConstant.showMoreAppNative == "yes") {
                     if (AdsConstant.moreAppDataList.size > 0) {
                         if (!activity.isFinishing) {
@@ -147,11 +155,16 @@ class ShimmerNativeAdActivity : BaseActivity() {
             }
 
             override fun onAdLoaded() {
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Loaded", Bundle())
+
                 shimmerLayout.visibility = View.GONE
             }
 
             override fun onAdClicked() {
-                Log.e(LOG_TAG, "${TAG}_Native_onAdClicked")
+                Log.e("Ads_Demo", "${TAG}_NativeAd_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Clicked", Bundle())
+
                 googleNativeAd(activity, adID, frameLayout, shimmerLayout)
             }
         }).build()
@@ -166,6 +179,10 @@ class ShimmerNativeAdActivity : BaseActivity() {
         shimmerLayout: ShimmerFrameLayout,
         nativeAd: NativeAd
     ) {
+
+        Log.e("Ads_Demo", "${TAG}_NativeAd_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Show", Bundle())
+
         shimmerLayout.visibility = View.GONE
 
         val adView = activity.layoutInflater.inflate(
@@ -239,7 +256,12 @@ class ShimmerNativeAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+
+        Log.e("Ads_Demo", "${TAG}_MoreNativeAd_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_LoadStart", Bundle())
+
         shimmerLayout.visibility = View.GONE
+
         val view = activity.layoutInflater.inflate(
             R.layout.google_native_ad_view_clone,
             activity.findViewById(R.id.nativeAd),
@@ -285,23 +307,30 @@ class ShimmerNativeAdActivity : BaseActivity() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adMediaClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppNativeAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
-        Log.e(TAG, "MoreAppNativeAd_load")
+
+        Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Show", Bundle())
+
     }
 
     private fun showAdClick(activity: Activity, link: String) {
         try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+            activity.startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+            activity.startActivity(Intent(Intent.ACTION_VIEW, link.toUri()))
         }
     }
 

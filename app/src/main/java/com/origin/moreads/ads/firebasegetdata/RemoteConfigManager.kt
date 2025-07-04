@@ -393,6 +393,17 @@ class RemoteConfigManager(private val activity: Activity) {
                 Log.e(TAG, "moreAppUrl: ${AdsConstant.moreAppUrl}")
                 Log.e(TAG, "moreAppAccountName: ${AdsConstant.moreAppAccountName}")
                 Log.e(TAG, "showAdsExitDialog: ${AdsConstant.showAdsExitDialog}")
+
+
+                Log.e(TAG, "onBoarding_1_BigNative: ${AdsConstant.onBoarding_1_BigNative}")
+                Log.e(TAG, "onBoarding_2_BigNative: ${AdsConstant.onBoarding_2_BigNative}")
+                Log.e(TAG, "onBoarding_Full_BigNative: ${AdsConstant.onBoarding_Full_BigNative}")
+
+                Log.e(TAG, "isShow_onBoardingScreen: ${AdsConstant.isShow_onBoardingScreen}")
+                Log.e(TAG, "isShow_onBoarding_1Ads: ${AdsConstant.isShow_onBoarding_1Ads}")
+                Log.e(TAG, "isShow_onBoarding_2Ads: ${AdsConstant.isShow_onBoarding_2Ads}")
+                Log.e(TAG, "isShow_onBoarding_FullAds: ${AdsConstant.isShow_onBoarding_FullAds}")
+                Log.e(TAG, "onBoarding_FullTimer: ${AdsConstant.onBoarding_FullTimer}")
                 /*************************************** Logging End  *******************************************/
 
 

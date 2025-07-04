@@ -28,6 +28,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
+import com.origin.moreads.ads.adsload.GoogleInterstitialAds
 
 class ShimmerBannerAdActivity : BaseActivity() {
 
@@ -98,6 +99,10 @@ class ShimmerBannerAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_BannerAdLoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAdLoadStart", Bundle())
+
+
         val adViewGoogle = AdView(activity)
         adViewGoogle.adUnitId = adID
         frameLayout.addView(adViewGoogle)
@@ -109,7 +114,9 @@ class ShimmerBannerAdActivity : BaseActivity() {
         adViewGoogle.loadAd(request)
         adViewGoogle.adListener = object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(LOG_TAG, "${TAG}_Banner_onAdFailedToLoad$loadAdError")
+                Log.e("Ads_Demo", "${TAG}_BannerAd_fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_fail", Bundle())
+
                 if (AdsConstant.showMoreAppBanner == "yes") {
                     if (AdsConstant.moreAppDataList.size > 0) {
                         if (!activity.isFinishing) {
@@ -129,13 +136,17 @@ class ShimmerBannerAdActivity : BaseActivity() {
             }
 
             override fun onAdLoaded() {
-                Log.e(LOG_TAG, "${TAG}_Banner_onAdLoaded")
+                Log.e("Ads_Demo", "${TAG}_BannerAd_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_Loaded", Bundle())
+
                 frameLayout.visibility = View.VISIBLE
                 shimmerLayout.visibility = View.GONE
             }
 
             override fun onAdClicked() {
-                Log.e(LOG_TAG, "${TAG}_Banner_onAdClicked")
+                Log.e("Ads_Demo", "${TAG}_BannerAd_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_Clicked", Bundle())
+
                 googleBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
         }
@@ -168,6 +179,9 @@ class ShimmerBannerAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
+        Log.e("Ads_Demo", "${TAG}_MoreBannerAd_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_LoadStart", Bundle())
+
         shimmerLayout.visibility = View.GONE
         val view = activity.layoutInflater.inflate(
             R.layout.google_banner_ad_view_clone,
@@ -199,25 +213,36 @@ class ShimmerBannerAdActivity : BaseActivity() {
         adCallToActionClone.text = activity.getString(R.string.install)
 
         adIconClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adNameClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adBodyClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
 
         adCallToActionClone.setOnClickListener {
-            Log.e(LOG_TAG, "MoreAppBannerAd_click")
+            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
+
             showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
         }
-        Log.e(LOG_TAG, "MoreAppBannerAd_show")
+
+        Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Show")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Show", Bundle())
+
     }
 
     private fun showAdClick(activity: Activity, link: String) {

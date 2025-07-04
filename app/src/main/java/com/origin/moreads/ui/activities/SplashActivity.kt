@@ -52,10 +52,8 @@ class SplashActivity : BaseActivity() {
     private lateinit var loadingProgressBar: ProgressBar
 
     companion object {
-        private const val LOG_TAG = "SplashActivity"
         private const val TAG = "SplashAct"
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +71,7 @@ class SplashActivity : BaseActivity() {
             startTimer(milliSec)
         }
 
-        Log.e(LOG_TAG, "${TAG}_onCreate")
+        Log.e("Ads_Demo", "${TAG}_onCreate")
         MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
 
     }
@@ -172,12 +170,18 @@ class SplashActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        Log.e("Ads_Demo", "${TAG}_onPause")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onPause", Bundle())
+
         AdsConstant.pauseResume = true
         splashHandler?.removeCallbacks(splashRunnable ?: return)
     }
 
     override fun onResume() {
         super.onResume()
+        Log.e("Ads_Demo", "${TAG}_onResume")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onResume", Bundle())
+
         if (AdsConstant.pauseResume) {
             AdsConstant.pauseResume = false
             splashHandler?.postDelayed(splashRunnable ?: return, 10)
@@ -186,6 +190,9 @@ class SplashActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e("Ads_Demo", "${TAG}_onDestroy")
+        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onDestroy", Bundle())
+
         splashHandler?.removeCallbacksAndMessages(null)
         splashHandler = null
         splashRunnable = null
@@ -195,6 +202,7 @@ class SplashActivity : BaseActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Log.e("Ads_Demo", "${TAG}_onBackPressed")
             MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
             finish()
             true

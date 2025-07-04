@@ -4,6 +4,7 @@
     <string name="start_loading">Start Loading</string>
 
     <string name="no_browser_error">You don\'t have any browser to open web page</string>
+    <string name="tap_home">Tap to enter the homepage</string>
 
 
     <string name="loading">Loading…</string>

@@ -1,5 +1,6 @@
-package com.origin.benchmark
+package com.origin.moreads
 
+import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
@@ -27,7 +28,7 @@ class ExampleStartupBenchmark {
 
     @Test
     fun startup() = benchmarkRule.measureRepeated(
-        packageName = "com.origin.adsdemo",
+        packageName = "com.origin.moreads",
         metrics = listOf(StartupTimingMetric()),
         iterations = 5,
         startupMode = StartupMode.HOT

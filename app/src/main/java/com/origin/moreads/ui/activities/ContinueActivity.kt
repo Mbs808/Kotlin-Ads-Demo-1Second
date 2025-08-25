@@ -12,35 +12,30 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.airbnb.lottie.LottieAnimationView
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
-import com.origin.moreads.ads.adsload.AdsLoaded
-import com.origin.moreads.ads.utils.AdsConstant
-import com.origin.moreads.extensions.prefsHelper
+import com.origin.moreads.databinding.ActivityContinueBinding
 import com.origin.moreads.extensions.startIntent
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.ui.activities.language.LanguageActivity
+import com.origin.moreads.utils.EventLog
 
 class ContinueActivity : BaseActivity() {
-    companion object {
-        private const val TAG = "ContinueAct"
-    }
 
-    var tvPolicy: TextView? = null
-    var continueLottie: LottieAnimationView? = null
     var policyText = ""
+
+    private lateinit var binding: ActivityContinueBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_continue)
+        binding = ActivityContinueBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -48,68 +43,28 @@ class ContinueActivity : BaseActivity() {
             insets
         }
 
-        tvPolicy = findViewById(R.id.tvPolicy)
-        continueLottie = findViewById(R.id.continueLottie)
+//        Loading Language Screen Ads
+//        loadLanguageScreenAds()
 
-        loadLanguageScreenAds()
         setPolicyText()
 
-        continueLottie?.setOnClickListener {
+        binding.continueLottie.setOnClickListener {
             startIntent(LanguageActivity::class.java)
             finish()
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Log.e("Ads_Demo", "${TAG}_onBackPressed")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
+                Log.e(EventLog, "ContinueAct_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("ContinueAct_onBackPressed", Bundle())
 
                 startIntent(LanguageActivity::class.java)
                 finish()
             }
         })
 
-        Log.e("Ads_Demo", "${TAG}_onCreate")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
-    }
-
-    private fun loadLanguageScreenAds() {
-
-        if (!AdsLoaded.isLoadingInLanguage) {
-            if (AdsConstant.showLanguageNativeAd == "yes") {
-                if (!prefsHelper.isLanguageSelected) {
-                    if (AdsConstant.onlyShowMoreAppLanguage != "yes") {
-                        if (AdsConstant.showBigNativeLanguage == "yes") {
-                            AdsLoaded.isLanguageLoadingInSplash = true
-                            AdsLoaded.loadGoogleNativeAd(
-                                this,
-                                AdsConstant.nativeLanguageAds
-                            ) { nativeAd ->
-                                if (AdsLoaded.languageUnifiedNativeAds != null) {
-                                    AdsLoaded.languageUnifiedNativeAds?.destroy()
-                                }
-                                AdsLoaded.languageUnifiedNativeAds = nativeAd
-                                AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
-                                    nativeAd != null
-                            }
-                        } else {
-                            AdsLoaded.isLanguageLoadingInSplash = true
-                            AdsLoaded.loadGoogleNativeAd(
-                                this,
-                                AdsConstant.nativeBannerLanguageAds
-                            ) { nativeAd ->
-                                if (AdsLoaded.languageUnifiedNativeAds != null) {
-                                    AdsLoaded.languageUnifiedNativeAds?.destroy()
-                                }
-                                AdsLoaded.languageUnifiedNativeAds = nativeAd
-                                AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
-                                    nativeAd != null
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Log.e(EventLog, "ContinueAct_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("ContinueAct_onCreate", Bundle())
     }
 
     private fun setPolicyText() {
@@ -158,11 +113,50 @@ class ContinueActivity : BaseActivity() {
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         } else {
-            Log.e("PrivacyText", "Privacy Policy not found in text.")
+            Log.e(EventLog, "Privacy Policy not found in text.")
         }
 
-        tvPolicy?.text = spannableString
-        tvPolicy?.movementMethod = LinkMovementMethod.getInstance()
+        binding.tvPolicy.text = spannableString
+        binding.tvPolicy.movementMethod = LinkMovementMethod.getInstance()
 
     }
+
+    /* private fun loadLanguageScreenAds() {
+         if (!AdsLoaded.isLoadingInLanguage) {
+             if (AdsConstant.showLanguageNativeAd == "yes") {
+                 if (!prefsHelper.isLanguageSelected) {
+                     if (AdsConstant.onlyShowMoreAppLanguage != "yes") {
+                         if (AdsConstant.showBigNativeLanguage == "yes") {
+                             AdsLoaded.isLanguageLoadingInSplash = true
+                             AdsLoaded.loadGoogleNativeAd(
+                                 this,
+                                 AdsConstant.nativeLanguageAds
+                             ) { nativeAd ->
+                                 if (AdsLoaded.languageUnifiedNativeAds != null) {
+                                     AdsLoaded.languageUnifiedNativeAds?.destroy()
+                                 }
+                                 AdsLoaded.languageUnifiedNativeAds = nativeAd
+                                 AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
+                                     nativeAd != null
+                             }
+                         } else {
+                             AdsLoaded.isLanguageLoadingInSplash = true
+                             AdsLoaded.loadGoogleNativeAd(
+                                 this,
+                                 AdsConstant.nativeBannerLanguageAds
+                             ) { nativeAd ->
+                                 if (AdsLoaded.languageUnifiedNativeAds != null) {
+                                     AdsLoaded.languageUnifiedNativeAds?.destroy()
+                                 }
+                                 AdsLoaded.languageUnifiedNativeAds = nativeAd
+                                 AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
+                                     nativeAd != null
+                             }
+                         }
+                     }
+                 }
+             }
+         }
+     }*/
+
 }

@@ -1,12 +1,13 @@
 package com.origin.moreads.ads.utils
 
-import com.origin.moreads.ads.model.moredata.MoreAppData
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import com.origin.moreads.R
+import com.origin.moreads.ads.model.MoreAppData
+import com.origin.moreads.models.Language
 
 object AdsConstant {
-
-    var onBoarding_1_BigNative = "ca-app-pub-3940256099942544/2247696110"
-    var onBoarding_2_BigNative = "ca-app-pub-3940256099942544/2247696110"
-    var onBoarding_Full_BigNative = "ca-app-pub-3940256099942544/2247696110"
 
     /** Interstitial Ad Server Variables **/
     var interstitialAds = "ca-app-pub-3940256099942544/1033173712"
@@ -37,18 +38,8 @@ object AdsConstant {
 
     /****** Main: Global Variables ******/
     /** Sub: Global Server Variables **/
-    var playStoreLink = ""
+    var playStoreLink = "https://play.google.com/store/apps/details?id="
     var maxAdContentRating = "PG"
-    var splashCloseTimer = "no"
-    var splashAppOpenShow = "yes"
-    var onlineSplashAppOpen = "no"
-
-    var isShow_onBoardingScreen = "yes"
-    var isShow_onBoarding_1Ads = "yes"
-    var isShow_onBoarding_2Ads = "yes"
-    var isShow_onBoarding_FullAds = "yes"
-    var onBoarding_FullTimer:Long = 6000L
-
 
      var isAdsClick = false
 
@@ -61,26 +52,26 @@ object AdsConstant {
     var showLanguageNativeAd = "yes"
 
     /** Google Interstitial Ad Server Variable **/
-    var googleInterMaxInterAdsShow = 6
-    var googleInterGapBetweenTwoInter = 5
+    var googleInterMaxInterAdsShow = 3
+    var googleInterGapBetweenTwoInter = 2
     var googleInterCountDownTimer:Long = 10000L
     var firstTime = false
 
     /** Exit App Server Variables **/
-    var showAdsExitDialog = "no"
+    var showAdsExitDialog = "yes"
 
     /** More App Ads Server Variables **/
-    var showMoreAppLanguage = "no"
-    var onlyShowMoreAppLanguage = "no"
+    var showMoreAppLanguage = "yes"
     var showMoreAppNative = "yes"
     var showMoreAppNativeBanner = "yes"
     var showMoreAppBanner = "yes"
+    var onlyShowMoreAppLanguage = "no"
     var onlyShowMoreAppNative = "no"
     var onlyShowMoreAppNativeBanner = "no"
     var onlyShowMoreAppBanner = "no"
 
     var moreAppUrl = "http://68.183.94.44/moreapps/api/"
-    var moreAppAccountName = "xyz"
+    var moreAccountName = "xyz"
 
     /** More App Ads Data Store **/
     var moreAppDataList = arrayListOf<MoreAppData>()
@@ -88,9 +79,34 @@ object AdsConstant {
 
     /** Splash Activity Local Variables **/
     var isLoadedAdID = false
-    var isSplashShowed = false
     var pauseResume = false
 
-    var isMoreAdsDataLoadProgress = false
+    fun isConnected(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            ?: return false
 
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+    }
+
+
+    fun getLanguageList(): List<Language> {
+        val languageList: MutableList<Language> = mutableListOf()
+        languageList.add(Language(R.drawable.ic_english, "English", "en", false))
+        languageList.add(Language(R.drawable.ic_hindi, "हिन्दी", "hi", false))
+        languageList.add(Language(R.drawable.ic_chinese, "普通话", "zh", false))
+        languageList.add(Language(R.drawable.ic_spanish, "Española", "es", false))
+        languageList.add(Language(R.drawable.ic_french, "Français", "fr", false))
+        languageList.add(Language(R.drawable.ic_arabic, "عربي", "ar", false))
+        languageList.add(Language(R.drawable.ic_bengali, "বাংলা", "bn", false))
+        languageList.add(Language(R.drawable.ic_russian, "Русский", "ru", false))
+        languageList.add(Language(R.drawable.germany, "Deutsch", "de", false))
+        languageList.add(Language(R.drawable.japan, "日本", "ja", false))
+        languageList.add(Language(R.drawable.ic_portuges, "Português", "pt", false))
+        languageList.add(Language(R.drawable.pakistan, "اردو", "ur", false))
+        return languageList
+    }
 }

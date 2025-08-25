@@ -4,21 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.origin.benchmark"
-    compileSdk = 34
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    namespace = "com.origin.moreads"
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

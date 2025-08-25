@@ -37,7 +37,7 @@
             android:textColor="@color/gray1"
             android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="Hindi" />
+            android:text="Hindi" />
 
         <TextView
             android:id="@+id/tvLanguageCode"
@@ -50,7 +50,7 @@
             android:textColor="@color/gray1"
             android:textSize="16sp"
             android:textStyle="bold"
-            tools:text="(HI)" />
+            android:text="(HI)" />
 
     </LinearLayout>
 

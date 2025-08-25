@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.origin.moreads"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -38,12 +38,11 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
         }
-
+        
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
-            isDebuggable = false
         }
 
     }
@@ -116,6 +115,4 @@ dependencies {
     //lottie animation
     implementation(libs.lottie)
 
-    // Consent GDPR
-    implementation(libs.user.messaging.platform)
 }

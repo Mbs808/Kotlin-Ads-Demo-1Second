@@ -6,8 +6,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fitsSystemWindows="true"
     tools:context=".ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clTop"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginStart="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="Banner Ads"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/ivBack" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- AdView -->
     <androidx.constraintlayout.widget.ConstraintLayout

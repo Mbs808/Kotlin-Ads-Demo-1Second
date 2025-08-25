@@ -2,25 +2,29 @@ package com.origin.moreads.ui.activities.ads.shimmer.bannerad
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Display
-import android.view.KeyEvent
 import android.view.View
+import android.view.Window
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.bumptech.glide.Glide
-import com.origin.moreads.MainApplication
-import com.origin.moreads.R
-import com.origin.moreads.ads.utils.AdsConstant
-import com.origin.moreads.extensions.gone
-import com.origin.moreads.ui.activities.language.BaseActivity
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
@@ -28,61 +32,145 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import com.origin.moreads.ads.adsload.GoogleInterstitialAds
+import com.origin.moreads.MainApplication
+import com.origin.moreads.R
+import com.origin.moreads.ads.utils.AdsConstant
+import com.origin.moreads.databinding.ActivityShimmerBannerAdBinding
+import com.origin.moreads.databinding.GoogleBannerAdViewCloneBinding
+import com.origin.moreads.extensions.prefsHelper
+import com.origin.moreads.ui.activities.language.BaseActivity
+import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.setGone
+import com.origin.moreads.utils.setVisible
+import com.origin.moreads.utils.showAdClick
 
 class ShimmerBannerAdActivity : BaseActivity() {
 
-    /***** AdView *****/
-    private var clAdView: ConstraintLayout? = null
-    /** Banner **/
-    private var rlBanner: RelativeLayout? = null
-    private var shimmerLayoutAd: ShimmerFrameLayout? = null
-    private var flBanner: FrameLayout? = null
+    private lateinit var binding: ActivityShimmerBannerAdBinding
+
+    var isAdsClicked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shimmer_banner_ad)
+        binding = ActivityShimmerBannerAdBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        initializeViews()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        if (!isGestureNavigationEnabled(this)) {
+            hideNavigationBar(window)
+        }
+
         setAdView()
 
-        Log.e(LOG_TAG, "${TAG}_onCreate")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
+        binding.ivBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.e("EventLog", "ShimmerBNRAd_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_onBackPressed", Bundle())
+                finish()
+            }
+        })
+
+        Log.e("EventLog", "ShimmerBNRAd_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_onCreate", Bundle())
     }
 
-    private fun initializeViews() {
-        /***** AdView *****/
-        clAdView = findViewById(R.id.clAdView)
-        /** Banner **/
-        rlBanner = findViewById(R.id.rlBanner)
-        shimmerLayoutAd = findViewById(R.id.shimmerLayoutAd)
-        flBanner = findViewById(R.id.flBanner)
+    private fun isGestureNavigationEnabled(context: Context): Boolean {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val value = Settings.Secure.getInt(
+                    context.contentResolver,
+                    "navigation_mode"
+                )
+                value == 2
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun hideNavigationBar(window: Window?) {
+        window?.let {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+
+            val windowInsetsController = WindowCompat.getInsetsController(it, it.decorView)
+            windowInsetsController.let { controller ->
+                //  Hide the navigation bar
+                controller.hide(WindowInsetsCompat.Type.navigationBars())
+
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+                it.statusBarColor = Color.TRANSPARENT
+
+                // true for light status bar (dark icons), false for dark status bar (light icons)
+                controller.isAppearanceLightStatusBars = true
+            }
+        }
+    }
+
+    /**
+    You call stopShimmer() before super.onDestroy(),
+    which is correct because you’re cleaning up UI components (shimmer animation) before the activity is marked as destroyed.
+    Once super.onDestroy() is called, the activity lifecycle is essentially over,
+    and accessing views after that could cause issues in some cases (e.g., null references or crashes if the view is no longer attached).
+     **/
+
+    override fun onDestroy() {
+        binding.shimmerLayoutAd.stopShimmer()
+        super.onDestroy()
+
+        Log.e(EventLog, "ShimmerBNRAd_onDestroy")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_onDestroy", Bundle())
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.e(EventLog, "ShimmerBNRAd_onResume")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_onResume", Bundle())
+
+        if (isAdsClicked) {
+            isAdsClicked = false
+            if (!isGestureNavigationEnabled(this@ShimmerBannerAdActivity)) {
+                hideNavigationBar(window)
+            }
+        }
     }
 
     private fun setAdView() {
-        if (AdsConstant.showBannerShimmer == "yes") {
+        if (AdsConstant.isConnected(this) && AdsConstant.showBannerShimmer == "yes" ) {
             if (AdsConstant.onlyShowMoreAppBanner == "yes") {
-                if (AdsConstant.moreAppDataList.size > 0) {
-                    Log.e(LOG_TAG, "Loaded_More_App_Banner")
+                if (AdsConstant.moreAppDataList.isNotEmpty()) {
                     loadMoreAppBannerAd(
                         activity = this,
-                        frameLayout = flBanner!!,
-                        shimmerLayout = shimmerLayoutAd!!
+                        frameLayout = binding.flBanner,
+                        shimmerLayout = binding.shimmerLayoutAd
                     )
                 } else {
-                    shimmerLayoutAd?.stopShimmer()
+                    binding.shimmerLayoutAd.stopShimmer()
                 }
             } else {
-                Log.e(LOG_TAG, "Loaded_Banner")
                 googleBannerAd(
                     activity = this,
                     adID = AdsConstant.bannerAds,
-                    frameLayout = flBanner!!,
-                    shimmerLayout = shimmerLayoutAd!!
+                    frameLayout = binding.flBanner,
+                    shimmerLayout = binding.shimmerLayoutAd
                 )
             }
-        }  else {
-            rlBanner?.gone()
+        } else {
+            binding.rlBanner.setGone()
         }
     }
 
@@ -99,9 +187,8 @@ class ShimmerBannerAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_BannerAdLoadStart")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAdLoadStart", Bundle())
-
+        Log.e(EventLog, "ShimmerBNRAd_BannerLoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_BannerLoadStart", Bundle())
 
         val adViewGoogle = AdView(activity)
         adViewGoogle.adUnitId = adID
@@ -114,11 +201,11 @@ class ShimmerBannerAdActivity : BaseActivity() {
         adViewGoogle.loadAd(request)
         adViewGoogle.adListener = object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e("Ads_Demo", "${TAG}_BannerAd_fail$loadAdError")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_fail", Bundle())
+                Log.e(EventLog, "ShimmerBNRAd_Banner_fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_Banner_fail", Bundle())
 
                 if (AdsConstant.showMoreAppBanner == "yes") {
-                    if (AdsConstant.moreAppDataList.size > 0) {
+                    if (AdsConstant.moreAppDataList.isNotEmpty()) {
                         if (!activity.isFinishing) {
                             loadMoreAppBannerAd(
                                 activity,
@@ -126,28 +213,36 @@ class ShimmerBannerAdActivity : BaseActivity() {
                                 shimmerLayout
                             )
                         }
-                    }else {
-                        shimmerLayoutAd?.stopShimmer()
+                    } else {
+                        shimmerLayout.stopShimmer()
                     }
-                }else{
-                    shimmerLayoutAd?.stopShimmer()
+                } else {
+                    shimmerLayout.stopShimmer()
                 }
-
             }
 
             override fun onAdLoaded() {
-                Log.e("Ads_Demo", "${TAG}_BannerAd_Loaded")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_Loaded", Bundle())
+                Log.e(EventLog, "ShimmerBNRAd_Banner_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "ShimmerBNRAd_Banner_Loaded",
+                    Bundle()
+                )
 
-                frameLayout.visibility = View.VISIBLE
-                shimmerLayout.visibility = View.GONE
+                frameLayout.setVisible()
+                shimmerLayout.stopShimmer()
+                shimmerLayout.setGone()
             }
 
             override fun onAdClicked() {
-                Log.e("Ads_Demo", "${TAG}_BannerAd_Clicked")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_BannerAd_Clicked", Bundle())
+                Log.e(EventLog, "ShimmerBNRAd_Banner_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "ShimmerBNRAd_Banner_Clicked",
+                    Bundle()
+                )
 
+                isAdsClicked = true
                 googleBannerAd(activity, adID, frameLayout, shimmerLayout)
+
             }
         }
     }
@@ -179,96 +274,53 @@ class ShimmerBannerAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_MoreBannerAd_LoadStart")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_LoadStart", Bundle())
+        Log.e(EventLog, "ShimmerBNRAd_MoreBanner_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_MoreBanner_LoadStart", Bundle())
 
-        shimmerLayout.visibility = View.GONE
-        val view = activity.layoutInflater.inflate(
-            R.layout.google_banner_ad_view_clone,
-            activity.findViewById(R.id.bannerAd),
-            false
-        )
-        val adIconClone = view.findViewById<ImageView>(R.id.adIconClone)
-        val adNameClone = view.findViewById<TextView>(R.id.adNameClone)
-        val adBodyClone = view.findViewById<TextView>(R.id.adBodyClone)
-        val adCallToActionClone = view.findViewById<TextView>(R.id.adCallToActionClone)
+        // Hide shimmer layout safely
+        shimmerLayout.setGone()
+
+        // Defensive checks
+        if (activity.isFinishing || activity.isDestroyed) return
+        if (AdsConstant.moreAppDataList.isEmpty()) return
+
+        val binding = GoogleBannerAdViewCloneBinding.inflate(activity.layoutInflater)
         frameLayout.removeAllViews()
-        frameLayout.addView(view)
+        frameLayout.addView(binding.root)
+
 
         AdsConstant.adCounter += 1
-
         if (AdsConstant.moreAppDataList.size == AdsConstant.adCounter) {
             AdsConstant.adCounter = 0
         }
 
         val number = AdsConstant.adCounter
+        val adData = AdsConstant.moreAppDataList[number]
+
 
         Glide.with(activity.applicationContext)
             .asBitmap()
-            .load(AdsConstant.moreAppDataList[number].appIcon)
-            .into(adIconClone)
-        adNameClone.text = AdsConstant.moreAppDataList[number].appName
-        adBodyClone.text = AdsConstant.moreAppDataList[number].appDescription
+            .load(adData.appIcon)
+            .into(binding.adIconClone)
 
-        adCallToActionClone.text = activity.getString(R.string.install)
+        binding.adNameClone.text = adData.appName
+        binding.adBodyClone.text = adData.appDescription
+        binding.adCallToActionClone.text = activity.getString(R.string.install)
 
-        adIconClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
+        val clickListener = View.OnClickListener {
+            Log.e(EventLog, "ShimmerBNRAd_MoreBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_MoreBanner_Click", Bundle())
+            showAdClick(activity, adData.appLink ?: "")
         }
 
-        adNameClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
+        binding.adIconClone.setOnClickListener(clickListener)
+        binding.adNameClone.setOnClickListener(clickListener)
+        binding.adBodyClone.setOnClickListener(clickListener)
+        binding.adCallToActionClone.setOnClickListener(clickListener)
 
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
+        Log.e(EventLog, "ShimmerBNRAd_MoreBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_MoreBanner_Show", Bundle())
 
-        adBodyClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        adCallToActionClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        Log.e("Ads_Demo", "${TAG}_MoreBannerAd_Show")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreBannerAd_Show", Bundle())
-
-    }
-
-    private fun showAdClick(activity: Activity, link: String) {
-        try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-        }
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_BACK -> {
-                Log.e(LOG_TAG, "${TAG}_onBackPressed")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
-                finish()
-                return true
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    companion object {
-        private const val LOG_TAG = "ShimmerBannerAdActivity"
-        private const val TAG = "ShimmerBNRAd"
     }
 
 }

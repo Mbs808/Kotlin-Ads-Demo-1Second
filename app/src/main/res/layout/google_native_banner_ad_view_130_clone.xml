@@ -93,7 +93,7 @@
                         android:textColor="@color/ad_text_primary_color"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        tools:text="@string/app_name" />
+                        android:text="@string/app_name" />
 
                 </LinearLayout>
 
@@ -109,7 +109,7 @@
                     android:maxLines="2"
                     android:textColor="@color/ad_text_secondary_color"
                     android:textSize="12sp"
-                    tools:text="Install app" />
+                    android:text="Install app" />
 
             </LinearLayout>
 
@@ -127,7 +127,7 @@
             android:textSize="19sp"
             android:textStyle="bold"
             android:textAllCaps="true"
-            tools:text="@string/app_name" />
+            android:text="@string/app_name" />
 
     </LinearLayout>
 

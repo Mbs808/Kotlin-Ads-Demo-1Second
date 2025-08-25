@@ -3,38 +3,37 @@ package com.origin.moreads.ui.activities.ads.interstitialad
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import androidx.activity.OnBackPressedCallback
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.adsload.GoogleInterstitialAds
 import com.origin.moreads.ui.activities.language.BaseActivity
+import com.origin.moreads.utils.EventLog
 
 class InterstitialAdActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interstitial_ad)
 
-        /***** Show Initialize Ads *****/
-        GoogleInterstitialAds.googleInterstitialShow(this, TAG)
+        /***** Show Inter Ads *****/
+        GoogleInterstitialAds.showInterstitial(this, "InterAct_onCreate")
 
-        Log.e(LOG_TAG, "${TAG}_onCreate")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.e(EventLog, "InterAct_onBack")
+                MainApplication.firebaseAnalytics?.logEvent("InterAct_onBack", Bundle())
+
+                GoogleInterstitialAds.showInterstitial(this@InterstitialAdActivity, "InterAct_onBack")
+
+                finish()
+            }
+        })
+
+
+        Log.e(EventLog, "InterAct_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("InterAct_onCreate", Bundle())
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Log.e(LOG_TAG, "${TAG}_onBackPressed")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
-
-            GoogleInterstitialAds.googleInterstitialShow(this, "${TAG}_BACK")
-            finish()
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    companion object {
-        private const val LOG_TAG = "InterstitialAd"
-        private const val TAG = "InterstitialAd"
-    }
 
 }

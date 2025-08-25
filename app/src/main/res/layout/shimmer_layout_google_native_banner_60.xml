@@ -6,7 +6,6 @@
     android:background="@color/ad_bg_color"
     android:gravity="center"
     android:orientation="horizontal"
-
     android:paddingHorizontal="5dp">
 
     <LinearLayout
@@ -43,14 +42,13 @@
                 android:id="@+id/tvAdTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:background="@drawable/bg_ad_tag_shimmer"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="2dp"
-                android:text="AD"
+                android:text="@string/ad"
                 android:textColor="@color/gray1"
                 android:textSize="10sp" />
 

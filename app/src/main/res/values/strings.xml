@@ -4,7 +4,7 @@
     <string name="start_loading">Start Loading</string>
 
     <string name="no_browser_error">You don\'t have any browser to open web page</string>
-    <string name="tap_home">Tap to enter the homepage</string>
+    <string name="tap_home">Continue to Home</string>
 
 
     <string name="loading">Loading…</string>
@@ -23,7 +23,6 @@
     <string name="native_banner_ad_100">Native Banner Ad 100</string>
     <string name="native_banner_ad_80">Native Banner Ad 80</string>
     <string name="native_banner_ad_60">Native Banner Ad 60</string>
-    <string name="share_app_description">Share Our App to enjoy with you friends and family.</string>
     <string name="tap_to_exit">Tap to exit</string>
     <string name="restart">RESTART</string>
     <string name="permission_needed">Permission Needed</string>
@@ -32,10 +31,30 @@
     <string name="permission_required_desc">This app require permission to use Notification. Grant them in app Setting.</string>
     <string name="open_setting">Open Setting</string>
     <string name="request_permission">Request Permission</string>
-    <string name="permission_granted">Permission Granted</string>
     <string name="shimmer_ads_card">shimmer\n</string>
-    <string name="get_start">Get Start</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="next">Next</string>
+
+    <string name="open_app_short_label">Uninstall</string>
+    <string name="open_app_long_label">Uninstall App</string>
+    <string name="many_ads">Too many ads</string>
+    <string name="app_crash">App crashes frequently</string>
+    <string name="performance">Performance issues</string>
+    <string name="battery">Battery drain</string>
+    <string name="other">Other issues</string>
+    <string name="why_uninstall">Why do you uninstall ?</string>
+    <string name="cancel">Cancel</string>
+    <string name="uninstall">Uninstall</string>
+    <string name="write">Write other feedback</string>
+    <string name="select_checkbox_or_enter_feedback">Please select at least one option or provide feedback</string>
+    <string name="enter_feedback">Please provide feedback</string>
+    <string name="please_tell">We’re sorry! Would you like to reduce the number of ads you see?</string>
+    <string name="thank">Thanks for feedback</string>
+    <string name="no_email">No email client found</string>
+    <string name="sorry">We\'re Sorry to See You Go</string>
+    <string name="improve">Thank you for trying our app. We appreciate your feedback and will use it to improve.</string>
+    <string name="ok">Ok</string>
+    <string name="ad">AD</string>
+    <string name="lets">Let\'s try</string>
+    <string name="reduce">We’ve reduced the ads for you!</string>
 
 </resources>

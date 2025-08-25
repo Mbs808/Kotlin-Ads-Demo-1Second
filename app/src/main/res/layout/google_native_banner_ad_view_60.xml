@@ -80,7 +80,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
-                    tools:text="@string/app_name" />
+                    android:text="@string/app_name" />
             </LinearLayout>
 
             <!-- Body -->
@@ -94,7 +94,7 @@
                 android:fontFamily="sans-serif"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
-                tools:text="Download now for free and enjoy!" />
+                android:text="Download now for free and enjoy!" />
         </LinearLayout>
 
         <!-- CTA Button -->
@@ -110,6 +110,6 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAllCaps="true"
-            tools:text="INSTALL" />
+            android:text="INSTALL" />
     </LinearLayout>
 </com.google.android.gms.ads.nativead.NativeAdView>

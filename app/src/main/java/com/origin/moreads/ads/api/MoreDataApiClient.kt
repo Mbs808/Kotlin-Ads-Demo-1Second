@@ -1,4 +1,4 @@
-package com.origin.moreads.ads.api.moredata
+package com.origin.moreads.ads.api
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

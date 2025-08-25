@@ -1,4 +1,4 @@
-package com.origin.moreads.ads.model.moredata
+package com.origin.moreads.ads.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

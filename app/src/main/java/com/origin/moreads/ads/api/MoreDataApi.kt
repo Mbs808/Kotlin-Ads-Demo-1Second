@@ -1,6 +1,6 @@
-package com.origin.moreads.ads.api.moredata
+package com.origin.moreads.ads.api
 
-import com.origin.moreads.ads.model.moredata.MoreApp
+import com.origin.moreads.ads.model.MoreApp
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

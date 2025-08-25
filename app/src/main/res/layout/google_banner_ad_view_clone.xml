@@ -84,7 +84,7 @@
                     android:textColor="@color/ad_text_primary_color"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="@string/app_name" />
+                    android:text="@string/app_name" />
             </LinearLayout>
 
 
@@ -116,7 +116,7 @@
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="14sp"
             android:textStyle="bold"
-            tools:text="Install" />
+            android:text="Install" />
 
     </LinearLayout>
 

@@ -68,4 +68,39 @@
         <item name="android:windowExitAnimation">@anim/slide_bottom</item>
     </style>
 
+    <style name="ExitBottomSheetTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@color/gray1</item>
+    </style>
+
+    <style name="Custom_Text" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+
+    </style>
+
+    <style name="Custom_Linear" parent="Theme.KotlinFirebaseAdsDemo">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingVertical">3dp</item>
+        <item name="android:paddingHorizontal">5dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_marginStart">10dp</item>
+
+    </style>
+
 </resources>

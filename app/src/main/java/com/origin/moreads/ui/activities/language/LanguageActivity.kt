@@ -3,27 +3,18 @@ package com.origin.moreads.ui.activities.language
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.Space
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
@@ -36,52 +27,25 @@ import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
-import com.origin.moreads.ads.adsload.AdsLoaded
-import com.origin.moreads.ads.adsload.OnBoardingFirstAd
-import com.origin.moreads.ads.adsload.OnBoardingFullAd
+import com.origin.moreads.ads.adsload.PreviewAdsLoad
 import com.origin.moreads.ads.utils.AdsConstant
-import com.origin.moreads.extensions.gone
+import com.origin.moreads.databinding.ActivityLanguageBinding
+import com.origin.moreads.databinding.GoogleNativeAdViewCloneBinding
+import com.origin.moreads.databinding.GoogleNativeBannerAdView130CloneBinding
 import com.origin.moreads.extensions.prefsHelper
 import com.origin.moreads.extensions.startIntent
-import com.origin.moreads.extensions.visible
 import com.origin.moreads.ui.activities.main.MainActivity
-import com.origin.moreads.ui.activities.onboard.OnBoardingActivity
 import com.origin.moreads.ui.adapters.LanguageAdapter
+import com.origin.moreads.utils.EventLog
 import com.origin.moreads.utils.IS_FROM
 import com.origin.moreads.utils.SETTING_ACTIVITY
-import com.origin.moreads.utils.Utils
+import com.origin.moreads.utils.setGone
+import com.origin.moreads.utils.setInvisible
+import com.origin.moreads.utils.setVisible
+import com.origin.moreads.utils.showAdClick
 import java.util.Locale
 
 class LanguageActivity : BaseActivity() {
-
-    /***** Toolbar *****/
-    private var ivBack: ImageView? = null
-    private var tvTitle: TextView? = null
-    private var ivNext: ImageView? = null
-
-    private var llContainer: LinearLayout? = null
-
-    /***** MainView *****/
-    private var rvLanguages: RecyclerView? = null
-    private var progressBar: ProgressBar? = null
-
-    /***** AdView *****/
-    private var clAdView: ConstraintLayout? = null
-
-    /** Small Native Banner **/
-    private var rlSmallNativeBanner: RelativeLayout? = null
-    private var flSmallNativeBanner: FrameLayout? = null
-    private var shimmerLayoutAd: ShimmerFrameLayout? = null
-
-    /** Big Native **/
-    private var rlBigNative: RelativeLayout? = null
-    private var flBigTextSpace: FrameLayout? = null
-    private var space: Space? = null
-    private var flBigNative: FrameLayout? = null
-    private var shimmerLayoutBigAd: ShimmerFrameLayout? = null
-
-    /** Shimmer Included Layout **/
-    private var shimmerAdMediaHolder: View? = null
 
     /***** Adapter *****/
     private var languageAdapter: LanguageAdapter? = null
@@ -93,12 +57,14 @@ class LanguageActivity : BaseActivity() {
     private var languageCode = ""
     private var isLanguageSelected = false
 
-
     private var upDownAnimator: ObjectAnimator? = null
+
+    private lateinit var binding: ActivityLanguageBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_language)
+        binding = ActivityLanguageBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         /** get value from intent **/
         isFrom = intent.getStringExtra(IS_FROM).toString()
@@ -113,12 +79,18 @@ class LanguageActivity : BaseActivity() {
 
         setAdView()
 
-        if (AdsConstant.isShow_onBoardingScreen == "yes") {
-            loadOnBoardingAds()
-        }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.e(EventLog, "LanguageAct_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("LanguageAct_onBackPressed", Bundle())
 
-        Log.e("Ads_Demo", "${TAG}_onCreate")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
+                backPressedEvent()
+            }
+        })
+
+        Log.e(EventLog, "LanguageAct_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_onCreate", Bundle())
+
     }
 
     private fun startAnimation() {
@@ -128,7 +100,7 @@ class LanguageActivity : BaseActivity() {
         }
 
         val translateY = PropertyValuesHolder.ofFloat("translationY", 0f, -20f)
-        upDownAnimator = ObjectAnimator.ofPropertyValuesHolder(llContainer, translateY)
+        upDownAnimator = ObjectAnimator.ofPropertyValuesHolder(binding.llContainer, translateY)
         upDownAnimator?.setDuration(1000)
         upDownAnimator?.repeatCount = ObjectAnimator.INFINITE
         upDownAnimator?.repeatMode = ObjectAnimator.REVERSE
@@ -139,98 +111,37 @@ class LanguageActivity : BaseActivity() {
     }
 
     private fun stopAnimation() {
-        if (llContainer != null) {
-            llContainer?.visibility = View.GONE
+        binding.llContainer.setGone()
 
-            ivNext?.setImageResource(R.drawable.ic_next)
-            // Stop the animation when the view is hidden
-            if (upDownAnimator != null && upDownAnimator!!.isRunning) {
-                upDownAnimator!!.cancel()
-            }
-        }
-    }
-
-    private fun loadOnBoardingAds() {
-        //preload native onboarding
-        if (AdsConstant.isShow_onBoarding_1Ads == "yes") {
-            if (!OnBoardingFirstAd.isLoadingInOnBoarding) {
-                OnBoardingFirstAd.isLoadingInLang = true
-                OnBoardingFirstAd.loadGoogleNativeAd(
-                    this,
-                    AdsConstant.onBoarding_1_BigNative
-                ) { nativeAd ->
-                    if (OnBoardingFirstAd.onB1NativeAds != null) {
-                        OnBoardingFirstAd.onB1NativeAds?.destroy()
-                    }
-                    OnBoardingFirstAd.onB1NativeAds = nativeAd
-                    OnBoardingFirstAd.isOnB1LoadingMutableLiveData.value = nativeAd != null
-                }
-            }
-        }
-
-        if (AdsConstant.isShow_onBoarding_FullAds == "yes") {
-            if (!OnBoardingFullAd.isLoadingInOnBoarding) {
-                OnBoardingFullAd.isLoadingInLang = true
-                OnBoardingFullAd.loadGoogleNativeAd(
-                    this,
-                    AdsConstant.onBoarding_Full_BigNative
-                ) { nativeAd ->
-                    if (OnBoardingFullAd.onBFullNativeAds != null) {
-                        OnBoardingFullAd.onBFullNativeAds?.destroy()
-                    }
-                    OnBoardingFullAd.onBFullNativeAds = nativeAd
-                    OnBoardingFullAd.isOnBFullLoadingMutableLiveData.value = nativeAd != null
-                }
-            }
+        binding.ivNext.setImageResource(R.drawable.ic_next)
+        // Stop the animation when the view is hidden
+        if (upDownAnimator != null && upDownAnimator!!.isRunning) {
+            upDownAnimator!!.cancel()
         }
     }
 
     private fun initializeViews() {
-        /***** Toolbar *****/
-        ivBack = findViewById(R.id.ivBack)
-        tvTitle = findViewById(R.id.tvTitle)
-        ivNext = findViewById(R.id.ivNext)
-
-        llContainer = findViewById(R.id.ll_container)
-
-        /***** MainView *****/
-        rvLanguages = findViewById(R.id.rvLanguages)
-        progressBar = findViewById(R.id.progressBar)
-
-        /***** AdView *****/
-        clAdView = findViewById(R.id.clAdView)
-        /** Small Native Banner **/
-        rlSmallNativeBanner = findViewById(R.id.rlSmallNativeBanner)
-        flSmallNativeBanner = findViewById(R.id.flSmallNativeBanner)
-        shimmerLayoutAd = findViewById(R.id.shimmerLayoutAd)
-        /** Big Native **/
-        rlBigNative = findViewById(R.id.rlBigNative)
-        flBigTextSpace = findViewById(R.id.flBigTextSpace)
-        space = findViewById(R.id.space)
-        flBigNative = findViewById(R.id.flBigNative)
-        shimmerLayoutBigAd = findViewById(R.id.shimmerLayoutBigAd)
-        shimmerAdMediaHolder = findViewById(R.id.shimmerAdMediaHolder)
         /***** Toolbar View Setup *****/
         when (isFrom) {
             SETTING_ACTIVITY -> {
-                clAdView?.gone()
-                ivBack?.visible()
-                val params = tvTitle?.layoutParams as ViewGroup.MarginLayoutParams
+                binding.clAdView.setGone()
+                binding.ivBack.setVisible()
+                val params = binding.tvTitle.layoutParams as ViewGroup.MarginLayoutParams
                 params.setMargins(15, 0, 15, 0)
-                tvTitle?.layoutParams = params
-                rvLanguages?.clipToPadding = false
-                rvLanguages?.setPadding(0, 0, 0, 0)
+                binding.tvTitle.layoutParams = params
+                binding.rvLanguages.clipToPadding = false
+                binding.rvLanguages.setPadding(0, 0, 0, 0)
 
             }
 
             else -> {
-                clAdView?.visible()
-                ivBack?.gone()
-                val params = tvTitle?.layoutParams as ViewGroup.MarginLayoutParams
+                binding.clAdView.setVisible()
+                binding.ivBack.setGone()
+                val params = binding.tvTitle.layoutParams as ViewGroup.MarginLayoutParams
                 params.setMargins(0, 0, 0, 0)
-                tvTitle?.layoutParams = params
-                rvLanguages?.clipToPadding = false
-                rvLanguages?.setPadding(0, 0, 0, 150)
+                binding.tvTitle.layoutParams = params
+                binding.rvLanguages.clipToPadding = false
+                binding.rvLanguages.setPadding(0, 0, 0, 150)
             }
         }
     }
@@ -244,31 +155,33 @@ class LanguageActivity : BaseActivity() {
                 stopAnimation()
             }
         )
-        rvLanguages?.apply {
+
+        binding.rvLanguages.apply {
             layoutManager = LinearLayoutManager(this@LanguageActivity)
             adapter = languageAdapter
             setHasFixedSize(true)
         }
         languageAdapter?.languageCode = languageCode
         isLanguageSelected = true
-        languageAdapter?.submitList(Utils.getLanguageList())
+        languageAdapter?.submitList(AdsConstant.getLanguageList())
     }
 
     private fun setOnClickListener() {
-        ivNext?.setOnClickListener {
+        binding.ivNext.setOnClickListener {
             if (isLanguageSelected) {
 
                 prefsHelper.languageCode = languageCode
                 prefsHelper.isLanguageSelected = true
-                pref(languageCode)
+                updateLocalePreference(languageCode)
                 intentToNextActivity()
             } else {
                 Toast.makeText(this, R.string.select_language_first, Toast.LENGTH_SHORT).show()
             }
         }
-        ivBack?.setOnClickListener { finish() }
 
-        llContainer?.setOnClickListener {
+        binding.ivBack.setOnClickListener { finish() }
+
+        binding.llContainer.setOnClickListener {
             stopAnimation()
         }
 
@@ -276,38 +189,30 @@ class LanguageActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.e("Ads_Demo", "${TAG}_onResume")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onResume", Bundle())
+        Log.e(EventLog, "LanguageAct_onResume")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_onResume", Bundle())
 
         if (AdsConstant.isAdsClick) {
             AdsConstant.isAdsClick = false
-            if (llContainer != null) {
-                llContainer?.visibility = View.VISIBLE
-                ivNext?.setImageResource(R.drawable.ic_next2)
-                startAnimation()
-            }
+            binding.llContainer.setVisible()
+            binding.ivNext.setImageResource(R.drawable.ic_next2)
+            startAnimation()
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
-        Log.e("Ads_Demo", "${TAG}_onDestroy")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onDestroy", Bundle())
-
         if (upDownAnimator != null && upDownAnimator!!.isRunning) {
             upDownAnimator!!.cancel()
         }
+        super.onDestroy()
+
+        Log.e(EventLog, "LanguageAct_onDestroy")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_onDestroy", Bundle())
 
     }
 
     private fun intentToNextActivity() {
-        val nextActivity =
-            if (!prefsHelper.isOnBoardingDone && AdsConstant.isShow_onBoardingScreen == "yes") {
-                OnBoardingActivity::class.java
-            } else {
-                MainActivity::class.java
-            }
+        val nextActivity = MainActivity::class.java
         startIntent(nextActivity)
         finish()
     }
@@ -320,164 +225,150 @@ class LanguageActivity : BaseActivity() {
         }
     }
 
-    fun pref(commCode: String?) {
-        val locale = Locale(commCode!!)
-        Locale.setDefault(locale)
-        val configuration = resources.configuration
-        configuration.setLocale(locale)
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-    }
+    fun updateLocalePreference(commCode: String?) {
+        if (commCode.isNullOrBlank()) return
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_BACK -> {
-                Log.e("Ads_Demo", "${TAG}_onBackPressed")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
-                backPressedEvent()
-                return true
-            }
-        }
-        return super.onKeyDown(keyCode, event)
+        val locale = Locale(commCode)
+        Locale.setDefault(locale)
+
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+
+        // Apply the locale update to the application context
+        createConfigurationContext(config)
     }
 
     private fun setAdView() {
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        mHeight = displayMetrics.heightPixels
-        val params = space?.layoutParams
-        params?.height = mHeight / 5
-        params?.width = ViewGroup.LayoutParams.MATCH_PARENT
-        space?.layoutParams = params
-
+        mHeight = resources.displayMetrics.heightPixels
 
         if (isFrom != SETTING_ACTIVITY) {
-            Log.e("Ads_Demo", "${TAG}_startAdsLoad")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_startAdsLoad", Bundle())
+            Log.e(EventLog, "LanguageAct_startAdsLoad")
+            MainApplication.firebaseAnalytics?.logEvent("LanguageAct_startAdsLoad", Bundle())
 
-            if (AdsConstant.showLanguageNativeAd == "yes") {
+            if (AdsConstant.isConnected(this@LanguageActivity) && AdsConstant.showLanguageNativeAd == "yes") {
                 if (AdsConstant.onlyShowMoreAppLanguage == "yes") {
                     if (AdsConstant.showBigNativeLanguage == "yes") {
-                        rlBigNative?.visibility = View.VISIBLE
-                        shimmerLayoutBigAd?.visibility = View.VISIBLE
 
-                        val paramsShimmerMediaHolder = shimmerAdMediaHolder?.layoutParams
-                        if (mHeight / 5 > 300) {
-                            paramsShimmerMediaHolder?.height = mHeight / 5
-                        } else {
-                            paramsShimmerMediaHolder?.height = 300
+                        binding.rlBigNative.setVisible()
+                        binding.shimmerLayoutBigAd.setVisible()
+
+                        binding.languageShimmer.shimmerAdMediaHolder.let { view ->
+                            val params = view.layoutParams
+                            val targetHeight = maxOf(mHeight / 5, 300)
+
+                            params?.apply {
+                                height = targetHeight
+                                width = ViewGroup.LayoutParams.MATCH_PARENT
+                                view.layoutParams = this
+                            }
                         }
-                        paramsShimmerMediaHolder?.width = ViewGroup.LayoutParams.MATCH_PARENT
-                        shimmerAdMediaHolder?.layoutParams = paramsShimmerMediaHolder
 
-
-                        val params1 = space?.layoutParams
-                        if (mHeight / 5 > 300) {
-                            params1?.height = mHeight / 5
-                        } else {
-                            params1?.height = 300
-                        }
-                        params1?.width = ViewGroup.LayoutParams.MATCH_PARENT
-                        space?.layoutParams = params1
-
-                        if (AdsConstant.moreAppDataList.size > 0) {
+                        if (AdsConstant.moreAppDataList.isNotEmpty()) {
                             loadMoreAppNativeAd(
                                 activity = this,
-                                frameLayout = flBigNative!!
+                                frameLayout = binding.flBigNative,
+                                shimmerLayout = binding.shimmerLayoutBigAd
                             )
                         }
                     } else {
-                        rlSmallNativeBanner?.visibility = View.VISIBLE
-                        shimmerLayoutAd?.visibility = View.VISIBLE
-                        if (AdsConstant.moreAppDataList.size > 0) {
+                        binding.rlSmallNativeBanner.setVisible()
+                        binding.shimmerLayoutAd.setVisible()
+
+                        if (AdsConstant.moreAppDataList.isNotEmpty()) {
                             loadMoreAppNativeBannerAd(
                                 activity = this,
-                                frameLayout = flSmallNativeBanner!!,
-                                shimmerLayout = shimmerLayoutAd!!
+                                frameLayout = binding.flSmallNativeBanner,
+                                shimmerLayout = binding.shimmerLayoutAd
                             )
                         } else {
-                            shimmerLayoutAd?.stopShimmer()
+                            binding.shimmerLayoutAd.stopShimmer()
                         }
                     }
                 } else {
-                    AdsLoaded.isLanguageAdLoadingMutableLiveData.observe(this) { loadedFromSplash ->
-                        if (AdsConstant.showBigNativeLanguage == "yes") {
-                            rlBigNative?.visibility = View.VISIBLE
-                            shimmerLayoutBigAd?.visibility = View.VISIBLE
 
-                            val paramsShimmerMediaHolder = shimmerAdMediaHolder?.layoutParams
-                            if (mHeight / 5 > 300) {
-                                paramsShimmerMediaHolder?.height = mHeight / 5
-                            } else {
-                                paramsShimmerMediaHolder?.height = 300
+                    PreviewAdsLoad.isLanguageAdLoadingMutableLiveData.observe(this) { loadedFromSplash ->
+                        if (AdsConstant.showBigNativeLanguage == "yes") {
+                            binding.rlBigNative.setVisible()
+                            binding.shimmerLayoutBigAd.setVisible()
+
+                            binding.languageShimmer.shimmerAdMediaHolder.let { view ->
+                                val params = view.layoutParams
+                                val targetHeight = maxOf(mHeight / 5, 300)
+
+                                params?.apply {
+                                    height = targetHeight
+                                    width = ViewGroup.LayoutParams.MATCH_PARENT
+                                    view.layoutParams = this
+                                }
                             }
-                            paramsShimmerMediaHolder?.width = ViewGroup.LayoutParams.MATCH_PARENT
-                            shimmerAdMediaHolder?.layoutParams = paramsShimmerMediaHolder
 
                             loadedFromSplash?.let {
                                 if (it) {
-                                    AdsLoaded.languageUnifiedNativeAds?.let {
+                                    PreviewAdsLoad.languageUnifiedNativeAds?.let {
                                         displayNativeAd(
                                             activity = this,
-                                            frameLayout = flBigNative!!,
-                                            shimmerLayoutAd = shimmerLayoutBigAd!!
+                                            frameLayout = binding.flBigNative,
+                                            shimmerLayoutAd = binding.shimmerLayoutBigAd
                                         )
                                     }
                                 } else {
                                     googleNativeAd(
                                         activity = this,
                                         adID = AdsConstant.nativeLanguageAds,
-                                        shimmerLayoutAd = shimmerLayoutBigAd!!,
-                                        frameLayout = flBigNative!!
+                                        shimmerLayoutAd = binding.shimmerLayoutBigAd,
+                                        frameLayout = binding.flBigNative
                                     )
                                 }
                             } ?: run {
-                                if (!AdsLoaded.isLoadingInLanguage && !AdsLoaded.isLanguageLoadingInSplash) {
-                                    AdsLoaded.isLoadingInLanguage = true
+                                if (!PreviewAdsLoad.isLoadingInLanguage && !PreviewAdsLoad.isLanguageLoadingInSplash) {
+                                    PreviewAdsLoad.isLoadingInLanguage = true
                                     googleNativeAd(
                                         activity = this,
                                         adID = AdsConstant.nativeLanguageAds,
-                                        shimmerLayoutAd = shimmerLayoutBigAd!!,
-                                        frameLayout = flBigNative!!
+                                        shimmerLayoutAd = binding.shimmerLayoutBigAd,
+                                        frameLayout = binding.flBigNative
                                     )
                                 }
                             }
                         } else {
-                            rlSmallNativeBanner?.visibility = View.VISIBLE
-                            shimmerLayoutAd?.visibility = View.VISIBLE
+                            binding.rlSmallNativeBanner.setVisible()
+                            binding.shimmerLayoutAd.setVisible()
                             loadedFromSplash?.let {
                                 if (it) {
-                                    AdsLoaded.languageUnifiedNativeAds?.let {
+                                    PreviewAdsLoad.languageUnifiedNativeAds?.let {
                                         displayNativeAd(
                                             activity = this,
-                                            frameLayout = flSmallNativeBanner!!,
-                                            shimmerLayoutAd = shimmerLayoutAd!!
+                                            frameLayout = binding.flSmallNativeBanner,
+                                            shimmerLayoutAd = binding.shimmerLayoutAd
                                         )
                                     }
                                 } else {
                                     googleNativeBannerAd(
                                         activity = this,
                                         adID = AdsConstant.nativeBannerLanguageAds,
-                                        shimmerLayoutAd = shimmerLayoutAd!!,
-                                        frameLayout = flSmallNativeBanner!!
+                                        shimmerLayoutAd = binding.shimmerLayoutAd,
+                                        frameLayout = binding.flSmallNativeBanner
                                     )
                                 }
                             } ?: run {
-                                if (!AdsLoaded.isLoadingInLanguage && !AdsLoaded.isLanguageLoadingInSplash) {
-                                    AdsLoaded.isLoadingInLanguage = true
+                                if (!PreviewAdsLoad.isLoadingInLanguage && !PreviewAdsLoad.isLanguageLoadingInSplash) {
+                                    PreviewAdsLoad.isLoadingInLanguage = true
                                     googleNativeBannerAd(
                                         activity = this,
                                         adID = AdsConstant.nativeBannerLanguageAds,
-                                        shimmerLayoutAd = shimmerLayoutAd!!,
-                                        frameLayout = flSmallNativeBanner!!
+                                        shimmerLayoutAd = binding.shimmerLayoutAd,
+                                        frameLayout = binding.flSmallNativeBanner
                                     )
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                binding.rlSmallNativeBanner.setGone()
+                binding.rlBigNative.setGone()
             }
         }
-
     }
 
     private fun displayNativeAd(
@@ -485,10 +376,10 @@ class LanguageActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayoutAd: ShimmerFrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_displayNativeAd")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_displayNativeAd", Bundle())
+        Log.e(EventLog, "LanguageAct_displayNativeAd")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_displayNativeAd", Bundle())
 
-        shimmerLayoutAd.visibility = View.GONE
+        shimmerLayoutAd.setGone()
 
         val adView = if (AdsConstant.showBigNativeLanguage == "yes") {
             activity.layoutInflater.inflate(
@@ -504,7 +395,7 @@ class LanguageActivity : BaseActivity() {
             ) as NativeAdView
         }
 
-        AdsLoaded.languageUnifiedNativeAds?.let {
+        PreviewAdsLoad.languageUnifiedNativeAds?.let {
             populateAppInstallAdView(it, adView)
             frameLayout.removeAllViews()
             frameLayout.addView(adView)
@@ -547,23 +438,23 @@ class LanguageActivity : BaseActivity() {
         (adView.headlineView as TextView).text = nativeAd.headline
 
         if (nativeAd.body == null) {
-            adView.bodyView?.visibility = View.INVISIBLE
+            adView.bodyView?.setInvisible()
         } else {
-            adView.bodyView?.visibility = View.VISIBLE
+            adView.bodyView?.setVisible()
             (adView.bodyView as TextView).text = nativeAd.body
         }
 
         if (nativeAd.icon == null) {
-            adView.iconView?.visibility = View.GONE
+            adView.iconView?.setGone()
         } else {
-            adView.iconView?.visibility = View.VISIBLE
+            adView.iconView?.setVisible()
             (adView.iconView as ImageView).setImageDrawable(nativeAd.icon?.drawable)
         }
 
         if (nativeAd.callToAction == null) {
-            adView.callToActionView?.visibility = View.INVISIBLE
+            adView.callToActionView?.setInvisible()
         } else {
-            adView.callToActionView?.visibility = View.VISIBLE
+            adView.callToActionView?.setVisible()
             (adView.callToActionView as TextView).text = nativeAd.callToAction
         }
 
@@ -582,51 +473,55 @@ class LanguageActivity : BaseActivity() {
         shimmerLayoutAd: ShimmerFrameLayout,
         frameLayout: FrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_start_load_NativeAd")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_start_load_NativeAd", Bundle())
+        Log.e(EventLog, "LanguageAct_start_load_NativeAd")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_start_load_NativeAd", Bundle())
 
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
-            AdsLoaded.languageUnifiedNativeAds = nativeAd
-            shimmerLayoutAd.visibility = View.GONE
+            PreviewAdsLoad.languageUnifiedNativeAds = nativeAd
+            shimmerLayoutAd.stopShimmer()
+            shimmerLayoutAd.setGone()
             displayNativeAd(activity, frameLayout, shimmerLayoutAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
-
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e("Ads_Demo", "${TAG}_NativeAd_fail$loadAdError")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_fail", Bundle())
 
-                AdsLoaded.languageUnifiedNativeAds = null
+                Log.e(EventLog, "LanguageAct_NativeAd_fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent("LanguageAct_NativeAd_fail", Bundle())
+
+                PreviewAdsLoad.languageUnifiedNativeAds = null
 
                 if (AdsConstant.showMoreAppLanguage == "yes") {
-                    if (AdsConstant.moreAppDataList.size > 0) {
+                    if (AdsConstant.moreAppDataList.isNotEmpty()) {
                         if (!activity.isFinishing) {
-                            loadMoreAppNativeAd(activity, frameLayout)
+                            loadMoreAppNativeAd(activity, frameLayout, shimmerLayoutAd)
                         }
                     } else {
-                        shimmerLayoutAd.visibility = View.VISIBLE
+                        shimmerLayoutAd.setVisible()
                         shimmerLayoutAd.stopShimmer()
                     }
                 } else {
-                    shimmerLayoutAd.visibility = View.VISIBLE
+                    shimmerLayoutAd.setVisible()
                     shimmerLayoutAd.stopShimmer()
                 }
             }
 
             override fun onAdLoaded() {
-                Log.e("Ads_Demo", "${TAG}_NativeAd_Loaded")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Loaded", Bundle())
+                Log.e(EventLog, "LanguageAct_NativeAd_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent("LanguageAct_NativeAd_Loaded", Bundle())
 
-                shimmerLayoutAd.visibility = View.GONE
+                shimmerLayoutAd.setGone()
             }
 
             override fun onAdClicked() {
-                Log.e("Ads_Demo", "${TAG}_NativeAd_Clicked")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeAd_Clicked", Bundle())
+                Log.e(EventLog, "LanguageAct_NativeAd_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "LanguageAct_NativeAd_Clicked",
+                    Bundle()
+                )
 
                 AdsConstant.isAdsClick = true
-                AdsLoaded.languageUnifiedNativeAds = null
+                PreviewAdsLoad.languageUnifiedNativeAds = null
             }
         }).build()
 
@@ -640,49 +535,58 @@ class LanguageActivity : BaseActivity() {
         shimmerLayoutAd: ShimmerFrameLayout,
         frameLayout: FrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_NativeBanner_LoadStart")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_LoadStart", Bundle())
+        Log.e(EventLog, "LanguageAct_NativeBanner_LoadStart")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_NativeBanner_LoadStart", Bundle())
 
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
-            AdsLoaded.languageUnifiedNativeAds = nativeAd
-            shimmerLayoutAd.visibility = View.GONE
+            PreviewAdsLoad.languageUnifiedNativeAds = nativeAd
+            shimmerLayoutAd.setGone()
             displayNativeAd(activity, frameLayout, shimmerLayoutAd)
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
 
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e("Ads_Demo", "${TAG}_NativeBanner_Fail$loadAdError")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Fail", Bundle())
+                Log.e(EventLog, "LanguageAct_NativeBanner_Fail$loadAdError")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "LanguageAct_NativeBanner_Fail",
+                    Bundle()
+                )
 
-                AdsLoaded.languageUnifiedNativeAds = null
+                PreviewAdsLoad.languageUnifiedNativeAds = null
                 if (AdsConstant.showMoreAppLanguage == "yes") {
-                    if (AdsConstant.moreAppDataList.size > 0) {
+                    if (AdsConstant.moreAppDataList.isNotEmpty()) {
                         if (!activity.isFinishing) {
                             loadMoreAppNativeBannerAd(activity, frameLayout, shimmerLayoutAd)
                         }
                     } else {
+                        shimmerLayoutAd.setVisible()
                         shimmerLayoutAd.stopShimmer()
-                        shimmerLayoutAd.visibility = View.VISIBLE
                     }
                 } else {
+                    shimmerLayoutAd.setVisible()
                     shimmerLayoutAd.stopShimmer()
-                    shimmerLayoutAd.visibility = View.VISIBLE
                 }
             }
 
             override fun onAdLoaded() {
-                Log.e("Ads_Demo", "${TAG}_NativeBanner_Loaded")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Loaded", Bundle())
-                shimmerLayoutAd.visibility = View.GONE
+                Log.e(EventLog, "LanguageAct_NativeBanner_Loaded")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "LanguageAct_NativeBanner_Loaded",
+                    Bundle()
+                )
+                shimmerLayoutAd.setGone()
             }
 
             override fun onAdClicked() {
-                Log.e("Ads_Demo", "${TAG}_NativeBanner_Clicked")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_NativeBanner_Clicked", Bundle())
+                Log.e(EventLog, "LanguageAct_NativeBanner_Clicked")
+                MainApplication.firebaseAnalytics?.logEvent(
+                    "LanguageAct_NativeBanner_Clicked",
+                    Bundle()
+                )
 
                 AdsConstant.isAdsClick = true
-                AdsLoaded.languageUnifiedNativeAds = null
+                PreviewAdsLoad.languageUnifiedNativeAds = null
             }
         }).build()
 
@@ -692,72 +596,66 @@ class LanguageActivity : BaseActivity() {
 
     private fun loadMoreAppNativeAd(
         activity: Activity,
-        frameLayout: FrameLayout
+        frameLayout: FrameLayout,
+        shimmerLayout: ShimmerFrameLayout
     ) {
 
-        Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Load")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Load", Bundle())
+        // Defensive checks
+        if (activity.isFinishing || activity.isDestroyed) return
+        if (AdsConstant.moreAppDataList.isEmpty()) return
 
-        val view = activity.layoutInflater.inflate(
-            R.layout.google_native_ad_view_clone,
-            activity.findViewById(R.id.nativeAd),
-            false
-        )
-        val adIconClone = view.findViewById<ImageView>(R.id.adIconClone)
-        val adNameClone = view.findViewById<TextView>(R.id.adNameClone)
-        val adBodyClone = view.findViewById<TextView>(R.id.adBodyClone)
-        val adMediaClone = view.findViewById<ImageView>(R.id.adMediaClone)
-        val adCallToActionClone = view.findViewById<TextView>(R.id.adCallToActionClone)
+        shimmerLayout.setGone()
+
+        Log.e(EventLog, "LanguageAct_MoreNativeAd_Load")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNativeAd_Load", Bundle())
+
+
+        // Inflate using ViewBinding
+        val binding = GoogleNativeAdViewCloneBinding.inflate(activity.layoutInflater)
         frameLayout.removeAllViews()
-        frameLayout.addView(view)
+        frameLayout.addView(binding.root)
+
 
         AdsConstant.adCounter += 1
-
         if (AdsConstant.moreAppDataList.size == AdsConstant.adCounter) {
             AdsConstant.adCounter = 0
         }
 
         val number = AdsConstant.adCounter
+        val adData = AdsConstant.moreAppDataList[number]
 
+        // Load icon
         Glide.with(activity.applicationContext)
-            .asBitmap()
-            .load(AdsConstant.moreAppDataList[number].appIcon)
-            .into(adIconClone)
-        adNameClone.text = AdsConstant.moreAppDataList[number].appName
-        adBodyClone.text = AdsConstant.moreAppDataList[number].appDescription
+            .load(adData.appIcon)
+            .into(binding.adIconClone)
 
-        val adMediaCloneParam = adMediaClone.layoutParams
-        if (mHeight / 5 > 300) {
-            adMediaCloneParam.height = mHeight / 5
-        } else {
-            adMediaCloneParam.height = 300
-        }
-        adMediaCloneParam.width = ViewGroup.LayoutParams.MATCH_PARENT
-        adMediaClone.layoutParams = adMediaCloneParam
+        binding.adNameClone.text = adData.appName
+        binding.adBodyClone.text = adData.appDescription
 
+        // Adjust adMediaClone size
+        val mediaParams = binding.adMediaClone.layoutParams
+        mediaParams.height = if (mHeight / 5 > 300) mHeight / 5 else 300
+        mediaParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        binding.adMediaClone.layoutParams = mediaParams
+
+        // Load banner
         Glide.with(activity.applicationContext)
-            .asBitmap()
-            .load(AdsConstant.moreAppDataList[number].appBanner)
-            .into(adMediaClone)
+            .load(adData.appBanner)
+            .into(binding.adMediaClone)
 
-        adCallToActionClone.text = activity.getString(R.string.install)
+        binding.adCallToActionClone.text = activity.getString(R.string.install)
 
-        adMediaClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
+        val onClickListener = View.OnClickListener {
+            Log.e(EventLog, "LanguageAct_MoreNativeAd_Click")
+            MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNativeAd_Click", Bundle())
+            showAdClick(activity, adData.appLink.toString())
         }
 
-        adCallToActionClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeAd_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_Click", Bundle())
+        binding.adMediaClone.setOnClickListener(onClickListener)
+        binding.adCallToActionClone.setOnClickListener(onClickListener)
 
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        Log.e("Ads_Demo", "${TAG}_MoreNativeAd_show")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeAd_show", Bundle())
+        Log.e(EventLog, "LanguageAct_MoreNativeAd_show")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNativeAd_show", Bundle())
 
     }
 
@@ -766,20 +664,19 @@ class LanguageActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
-        Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Load")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Load", Bundle())
 
-        shimmerLayout.visibility = View.GONE
-        val view = activity.layoutInflater.inflate(
-            R.layout.google_native_banner_ad_view_130_clone,
-            activity.findViewById(R.id.nativeAd), false
-        )
-        val adIconClone = view.findViewById<ImageView>(R.id.adIconClone)
-        val adNameClone = view.findViewById<TextView>(R.id.adNameClone)
-        val adBodyClone = view.findViewById<TextView>(R.id.adBodyClone)
-        val adCallToActionClone = view.findViewById<TextView>(R.id.adCallToActionClone)
+        Log.e(EventLog, "LanguageAct_MoreNBanner_Load")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNBanner_Load", Bundle())
+
+        // Defensive checks
+        if (activity.isFinishing || activity.isDestroyed) return
+        if (AdsConstant.moreAppDataList.isEmpty()) return
+
+        shimmerLayout.setGone()
+
+        val binding = GoogleNativeBannerAdView130CloneBinding.inflate(activity.layoutInflater)
         frameLayout.removeAllViews()
-        frameLayout.addView(view)
+        frameLayout.addView(binding.root)
 
         AdsConstant.adCounter += 1
 
@@ -788,60 +685,29 @@ class LanguageActivity : BaseActivity() {
         }
 
         val number = AdsConstant.adCounter
+        val adData = AdsConstant.moreAppDataList[number]
 
         Glide.with(activity.applicationContext)
             .asBitmap()
-            .load(AdsConstant.moreAppDataList[number].appIcon)
-            .into(adIconClone)
-        adNameClone.text = AdsConstant.moreAppDataList[number].appName
-        adBodyClone.text = AdsConstant.moreAppDataList[number].appDescription
+            .load(adData.appIcon)
+            .into(binding.adIconClone)
 
-        adCallToActionClone.text = activity.getString(R.string.install)
+        binding.adNameClone.text = adData.appName
+        binding.adBodyClone.text = adData.appDescription
+        binding.adCallToActionClone.text = activity.getString(R.string.install)
 
-        adIconClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
+        val adClickListener = View.OnClickListener {
+            Log.e(EventLog, "LanguageAct_MoreNBanner_Click")
+            MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNBanner_Click", Bundle())
+            showAdClick(activity, adData.appLink ?: "")
         }
 
-        adNameClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
+        binding.adIconClone.setOnClickListener(adClickListener)
+        binding.adNameClone.setOnClickListener(adClickListener)
+        binding.adBodyClone.setOnClickListener(adClickListener)
+        binding.adCallToActionClone.setOnClickListener(adClickListener)
 
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        adBodyClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        adCallToActionClone.setOnClickListener {
-            Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Click")
-            MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Click", Bundle())
-
-            showAdClick(activity, AdsConstant.moreAppDataList[number].appLink.toString())
-        }
-
-        Log.e("Ads_Demo", "${TAG}_MoreNativeBanner_Show")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_MoreNativeBanner_Show", Bundle())
+        Log.e(EventLog, "LanguageAct_MoreNBanner_Show")
+        MainApplication.firebaseAnalytics?.logEvent("LanguageAct_MoreNBanner_Show", Bundle())
     }
-
-    private fun showAdClick(activity: Activity, link: String) {
-        AdsConstant.isAdsClick = true
-        try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
-        }
-    }
-
-    companion object {
-        private const val TAG = "LanguageAct"
-    }
-
 }

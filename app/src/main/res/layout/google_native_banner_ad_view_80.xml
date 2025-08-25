@@ -86,7 +86,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
-                    tools:text="@string/app_name" />
+                    android:text="@string/app_name" />
             </LinearLayout>
 
 
@@ -101,7 +101,7 @@
                 android:fontFamily="sans-serif"
                 android:textColor="@color/ad_text_secondary_color"
                 android:textSize="12sp"
-                tools:text="Install app" />
+                android:text="Install app" />
 
         </LinearLayout>
 
@@ -119,7 +119,7 @@
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="14sp"
             android:textStyle="bold"
-            tools:text="Install" />
+            android:text="Install" />
 
     </LinearLayout>
 

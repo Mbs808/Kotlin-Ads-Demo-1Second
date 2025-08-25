@@ -2,12 +2,9 @@ package com.origin.moreads.ui.activities.ads.shimmer
 
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import com.origin.moreads.MainApplication
-import com.origin.moreads.R
-import com.origin.moreads.extensions.color
-import com.origin.moreads.extensions.setStatusAndNavigationBarColor
+import com.origin.moreads.databinding.ActivityShimmerAdsBinding
 import com.origin.moreads.extensions.startIntent
 import com.origin.moreads.ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity
 import com.origin.moreads.ui.activities.ads.shimmer.nativead.ShimmerNativeAdActivity
@@ -16,81 +13,58 @@ import com.origin.moreads.ui.activities.ads.shimmer.nativead.ShimmerNativeBanner
 import com.origin.moreads.ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd60Activity
 import com.origin.moreads.ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd80Activity
 import com.origin.moreads.ui.activities.language.BaseActivity
+import com.origin.moreads.utils.EventLog
 
 class ShimmerAdsActivity : BaseActivity() {
 
-    /***** Main View *****/
-    private var btnBannerAd: TextView? = null
-    private var btnNativeAd: TextView? = null
-    private var btnNativeBannerAd130: TextView? = null
-    private var btnNativeBannerAd100: TextView? = null
-    private var btnNativeBannerAd80: TextView? = null
-    private var btnNativeBannerAd60: TextView? = null
+    private lateinit var binding: ActivityShimmerAdsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shimmer_ads)
+        binding = ActivityShimmerAdsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        initializeViews()
         setOnClickListener()
 
-        Log.e(LOG_TAG, "${TAG}_onCreate")
-        MainApplication.firebaseAnalytics?.logEvent("${TAG}_onCreate", Bundle())
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.e(EventLog, "ShimmerAdsAct_onBackPressed")
+                MainApplication.firebaseAnalytics?.logEvent("ShimmerAdsAct_onBackPressed", Bundle())
 
-    }
+                finish()
+            }
+        })
 
-    private fun initializeViews() {
-        /***** MainView *****/
-        btnBannerAd = findViewById(R.id.tvBannerAd)
-        btnNativeAd = findViewById(R.id.tvNativeAd)
-        btnNativeBannerAd130 = findViewById(R.id.tvNativeBannerAd130)
-        btnNativeBannerAd100 = findViewById(R.id.tvNativeBannerAd100)
-        btnNativeBannerAd80 = findViewById(R.id.tvNativeBannerAd80)
-        btnNativeBannerAd60 = findViewById(R.id.tvNativeBannerAd60)
+        Log.e(EventLog, "ShimmerAdsAct_onCreate")
+        MainApplication.firebaseAnalytics?.logEvent("ShimmerAdsAct_onCreate", Bundle())
     }
 
     private fun setOnClickListener() {
         /***** MainView *****/
-        btnBannerAd?.setOnClickListener {
+        binding.tvBannerAd.setOnClickListener {
             startIntent(ShimmerBannerAdActivity::class.java)
         }
 
-        btnNativeAd?.setOnClickListener {
+        binding.tvNativeAd.setOnClickListener {
             startIntent(ShimmerNativeAdActivity::class.java)
         }
 
-        btnNativeBannerAd130?.setOnClickListener {
+        binding.tvNativeBannerAd130.setOnClickListener {
             startIntent(ShimmerNativeBannerAd130Activity::class.java)
         }
 
-        btnNativeBannerAd100?.setOnClickListener {
+        binding.tvNativeBannerAd100.setOnClickListener {
             startIntent(ShimmerNativeBannerAd100Activity::class.java)
         }
 
-        btnNativeBannerAd80?.setOnClickListener {
+        binding.tvNativeBannerAd80.setOnClickListener {
             startIntent(ShimmerNativeBannerAd80Activity::class.java)
         }
 
-        btnNativeBannerAd60?.setOnClickListener {
+        binding.tvNativeBannerAd60.setOnClickListener {
             startIntent(ShimmerNativeBannerAd60Activity::class.java)
         }
-    }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_BACK -> {
-                Log.e(LOG_TAG, "${TAG}_onBackPressed")
-                MainApplication.firebaseAnalytics?.logEvent("${TAG}_onBackPressed", Bundle())
-                finish()
-                return true
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    companion object {
-        private const val LOG_TAG = "ShimmerAdsActivity"
-        private const val TAG = "ShimmerAds"
     }
 
 }

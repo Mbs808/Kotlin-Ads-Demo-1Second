@@ -79,7 +79,7 @@ fun Context.hasPermission(permId: Int) = ContextCompat.checkSelfPermission(
 
 fun Context.hasAllPermissions(permIds: Collection<Int>) = permIds.all(this::hasPermission)
 
-fun Context.getPermissionString(id: Int) = when (id) {
+fun getPermissionString(id: Int) = when (id) {
     PERMISSION_POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else ""
     else -> ""
 }

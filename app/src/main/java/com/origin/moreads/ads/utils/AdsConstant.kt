@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.origin.moreads.R
+import com.origin.moreads.ads.firebasegetdata.RemoteConfigManager
 import com.origin.moreads.ads.model.MoreAppData
 import com.origin.moreads.models.Language
 
@@ -39,10 +40,8 @@ object AdsConstant {
     /****** Main: Global Variables ******/
     /** Sub: Global Server Variables **/
     var playStoreLink = "https://play.google.com/store/apps/details?id="
-    var maxAdContentRating = "PG"
 
-     var isAdsClick = false
-
+    var isAdsClick = false
 
     /** Sub: Global Local Variables **/
     var isSplashInterCall = false
@@ -54,11 +53,16 @@ object AdsConstant {
     /** Google Interstitial Ad Server Variable **/
     var googleInterMaxInterAdsShow = 3
     var googleInterGapBetweenTwoInter = 2
-    var googleInterCountDownTimer:Long = 10000L
+    var googleInterCountDownTimer: Long = 10000L
     var firstTime = false
 
     /** Exit App Server Variables **/
     var showAdsExitDialog = "yes"
+
+    /** Update Dialog Server Variables **/
+    var updateNow = "no"
+    var isIntentNext = false
+    var isUpdateDialogShowed = false
 
     /** More App Ads Server Variables **/
     var showMoreAppLanguage = "yes"
@@ -81,9 +85,11 @@ object AdsConstant {
     var isLoadedAdID = false
     var pauseResume = false
 
+
     fun isConnected(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            ?: return false
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
 
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false

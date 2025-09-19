@@ -21,27 +21,25 @@
             android:id="@+id/rlNativeBanner"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/ad_bg_color"
             app:layout_constraintTop_toTopOf="parent">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerLayoutAd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true"
+                app:shimmer_dropoff="0.5"
+                app:shimmer_duration="1500">
+
+                <include layout="@layout/shimmer_layout_google_native_banner_100" />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <FrameLayout
                 android:id="@+id/flNativeBanner"
                 android:layout_width="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content" >
-
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmerLayoutAd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:shimmer_auto_start="true"
-                    app:shimmer_dropoff="0.5"
-                    app:shimmer_duration="1500">
-
-                    <include layout="@layout/shimmer_layout_google_native_banner_100" />
-
-                </com.facebook.shimmer.ShimmerFrameLayout>
-            </FrameLayout>
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"/>
 
         </RelativeLayout>
 

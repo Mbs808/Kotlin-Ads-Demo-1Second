@@ -174,21 +174,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <FrameLayout
-                android:id="@+id/flBigTextSpace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Space
-                    android:id="@+id/space"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="60dp"
-                    android:layout_marginBottom="60dp" />
-
-
-            </FrameLayout>
-
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmerLayoutBigAd"
                 android:layout_width="match_parent"

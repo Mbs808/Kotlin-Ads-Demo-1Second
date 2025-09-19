@@ -3,15 +3,16 @@ package com.origin.moreads.utils
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import com.origin.moreads.R
+import com.origin.moreads.ads.utils.AdsConstant
 
 // Variable Route
 const val IS_FROM = "IS_FROM"
@@ -19,7 +20,6 @@ const val IS_FROM = "IS_FROM"
 const val EventLog = "Ads_Demo"
 
 const val PREF_NAME = "com.origin.adsdemo"
-
 
 // Activity Route
 const val SETTING_ACTIVITY = "SETTING_ACTIVITY"
@@ -51,7 +51,7 @@ fun View.setGone() {
 
 fun showAdClick(activity: Activity, link: String?) {
     if (link.isNullOrBlank()) {
-        Log.e(EventLog, "Ad link is null or empty")
+        Log.e("TAG", "Ad link is null or empty")
         return
     }
 
@@ -62,8 +62,23 @@ fun showAdClick(activity: Activity, link: String?) {
         }
         activity.startActivity(intent)
     } catch (e: ActivityNotFoundException) {
-        Log.e(EventLog, "No activity found for link: $link", e)
+        Toast.makeText(activity, activity.getString(R.string.no_app_found), Toast.LENGTH_SHORT).show()
+        Log.e("TAG", "No activity found for link: $link", e)
     } catch (e: Exception) {
-        Log.e(EventLog, "Error opening ad link: $link", e)
+        Log.e("TAG", "Error opening ad link: $link", e)
+    }
+}
+
+fun gotoPlayStore(activity: Activity) {
+    try {
+        val intent = Intent("android.intent.action.VIEW")
+        intent.setData(AdsConstant.playStoreLink.toUri())
+        activity.startActivity(intent)
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+        val linkString: String = AdsConstant.playStoreLink
+        val defaultBrowser = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER)
+        defaultBrowser.setData(linkString.toUri())
+        activity.startActivity(defaultBrowser)
     }
 }

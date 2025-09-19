@@ -69,7 +69,7 @@
                     android:includeFontPadding="false"
                     android:paddingVertical="2dp"
                     android:paddingHorizontal="3dp"
-                    android:text="AD"
+                    android:text="@string/ad"
                     android:textColor="@color/ad_tag_text_color"
                     android:textSize="10sp" />
 
@@ -98,7 +98,7 @@
                 android:maxLines="2"
                 android:textColor="@color/ad_text_secondary_color"
                 android:textSize="12sp"
-                android:text="Install app"/>
+                android:text="@string/install"/>
 
         </LinearLayout>
 
@@ -116,7 +116,7 @@
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:text="Install" />
+            android:text="@string/install" />
 
     </LinearLayout>
 

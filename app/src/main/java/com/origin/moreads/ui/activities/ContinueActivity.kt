@@ -43,8 +43,11 @@ class ContinueActivity : BaseActivity() {
             insets
         }
 
-//        Loading Language Screen Ads
-//        loadLanguageScreenAds()
+        // preload language native ads
+//        if (AdsConstant.isConnected(this@ContinueActivity) && !prefsHelper.isLanguageSelected && AdsConstant.showLanguageNativeAd == "yes") {
+//            PreviewLangAdsLoad.loadLanguageNativeAds(this)
+//        }
+
 
         setPolicyText()
 
@@ -89,7 +92,7 @@ class ContinueActivity : BaseActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, "https://www.google.com/".toUri())
                     try {
                         widget.context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
+                    } catch (_: ActivityNotFoundException) {
                         Toast.makeText(
                             widget.context,
                             widget.context.getString(R.string.no_browser_error),
@@ -113,50 +116,12 @@ class ContinueActivity : BaseActivity() {
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         } else {
-            Log.e(EventLog, "Privacy Policy not found in text.")
+            Log.e("TAG", "Privacy Policy not found in text.")
         }
 
         binding.tvPolicy.text = spannableString
         binding.tvPolicy.movementMethod = LinkMovementMethod.getInstance()
 
     }
-
-    /* private fun loadLanguageScreenAds() {
-         if (!AdsLoaded.isLoadingInLanguage) {
-             if (AdsConstant.showLanguageNativeAd == "yes") {
-                 if (!prefsHelper.isLanguageSelected) {
-                     if (AdsConstant.onlyShowMoreAppLanguage != "yes") {
-                         if (AdsConstant.showBigNativeLanguage == "yes") {
-                             AdsLoaded.isLanguageLoadingInSplash = true
-                             AdsLoaded.loadGoogleNativeAd(
-                                 this,
-                                 AdsConstant.nativeLanguageAds
-                             ) { nativeAd ->
-                                 if (AdsLoaded.languageUnifiedNativeAds != null) {
-                                     AdsLoaded.languageUnifiedNativeAds?.destroy()
-                                 }
-                                 AdsLoaded.languageUnifiedNativeAds = nativeAd
-                                 AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
-                                     nativeAd != null
-                             }
-                         } else {
-                             AdsLoaded.isLanguageLoadingInSplash = true
-                             AdsLoaded.loadGoogleNativeAd(
-                                 this,
-                                 AdsConstant.nativeBannerLanguageAds
-                             ) { nativeAd ->
-                                 if (AdsLoaded.languageUnifiedNativeAds != null) {
-                                     AdsLoaded.languageUnifiedNativeAds?.destroy()
-                                 }
-                                 AdsLoaded.languageUnifiedNativeAds = nativeAd
-                                 AdsLoaded.isLanguageAdLoadingMutableLiveData.value =
-                                     nativeAd != null
-                             }
-                         }
-                     }
-                 }
-             }
-         }
-     }*/
 
 }

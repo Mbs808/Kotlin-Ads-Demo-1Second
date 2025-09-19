@@ -52,7 +52,7 @@
                     android:background="@drawable/bg_ad_tag_shimmer"
                     android:gravity="center"
                     android:fontFamily="sans-serif-medium"
-                    android:text="AD"
+                    android:text="@string/ad"
                     android:textSize="10sp"
                     android:textColor="@color/gray1"
                     android:includeFontPadding="false" />

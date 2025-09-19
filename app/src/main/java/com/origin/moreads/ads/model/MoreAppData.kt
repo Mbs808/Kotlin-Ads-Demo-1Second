@@ -43,6 +43,6 @@ data class MoreAppData(
             ------appIcon---$appIcon
             -----appBanner----$appBanner
             ----appScreenshot-----$appScreenshot
-            """.trimIndent();
+            """.trimIndent()
     }
 }

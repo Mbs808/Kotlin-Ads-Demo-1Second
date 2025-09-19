@@ -11,8 +11,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
+import com.origin.moreads.ads.UpdateDialogManager
 import com.origin.moreads.ads.adsload.GoogleInterstitialAds
 import com.origin.moreads.ads.adsload.MoreAppDataLoader
+import com.origin.moreads.ads.adsload.PreviewLangAdsLoad
 import com.origin.moreads.ads.firebasegetdata.RemoteConfigManager
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivitySplashBinding
@@ -25,15 +27,11 @@ import com.origin.moreads.utils.EventLog
 import com.origin.moreads.utils.PERMISSION_REQUEST_NOTIFICATION_LIST
 
 class SplashActivity : BaseActivity() {
-
+    private val TAG = "SplashAct"
     private var splashHandler: Handler? = null
     private var splashRunnable: Runnable? = null
-
-
     private var remoteConfigManager: RemoteConfigManager? = null
-
     private val milliSec = 1000L
-
     private lateinit var binding: ActivitySplashBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +59,9 @@ class SplashActivity : BaseActivity() {
 
         handleAdsStates()
 
+        // Clear preload language ads
+        PreviewLangAdsLoad.clearLanguageAd()
+
         startTimer(milliSec)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -74,7 +75,6 @@ class SplashActivity : BaseActivity() {
 
         Log.e(EventLog, "SplashAct_onCreate")
         MainApplication.firebaseAnalytics?.logEvent("SplashAct_onCreate", Bundle())
-
     }
 
     private fun checkLauncherRedundant() {
@@ -89,6 +89,8 @@ class SplashActivity : BaseActivity() {
     private fun handleAdsStates() {
         AdsConstant.pauseResume = false
         AdsConstant.isLoadedAdID = false
+        AdsConstant.isIntentNext = false
+        AdsConstant.isUpdateDialogShowed = false
 
         GoogleInterstitialAds.originalAdsShown = 0
 
@@ -99,37 +101,50 @@ class SplashActivity : BaseActivity() {
         } else {
             prefsHelper.rateUsDialogCounter++
         }
-
     }
 
-
     private fun startTimer(duration: Long) {
+        // preload language native ads
+        if (AdsConstant.isConnected(this@SplashActivity) && !prefsHelper.isLanguageSelected && AdsConstant.showLanguageNativeAd == "yes") {
+            PreviewLangAdsLoad.loadLanguageNativeAds(this)
+        }
 
         if (AdsConstant.isConnected(this)) {
             remoteConfigManager = RemoteConfigManager(activity = this)
         }
 
         splashHandler = Handler(Looper.getMainLooper())
+
         splashRunnable = Runnable {
+            if (AdsConstant.isConnected(this) && AdsConstant.updateNow == "yes") {
+                val dialog = UpdateDialogManager.currentDialog
+                if (dialog != null && dialog.isShowing) {
+                    return@Runnable
+                }
+            }
             startIntentToNextActivity()
         }
         splashHandler?.postDelayed(splashRunnable!!, duration)
     }
 
     private fun startIntentToNextActivity() {
-        val nextActivity = when {
-            !prefsHelper.isLanguageSelected -> ContinueActivity::class.java
+        if (!AdsConstant.isIntentNext) {
+            AdsConstant.isIntentNext = true
 
-            else -> MainActivity::class.java
+            val nextActivity = when {
+                !prefsHelper.isLanguageSelected -> ContinueActivity::class.java
+
+                else -> MainActivity::class.java
+            }
+
+            startIntent(nextActivity)
+            finish()
         }
-        startIntent(nextActivity)
-        finish()
     }
 
     override fun onPause() {
         super.onPause()
-        Log.e(EventLog, "SplashAct_onPause")
-        MainApplication.firebaseAnalytics?.logEvent("SplashAct_onPause", Bundle())
+        Log.e(TAG, "SplashAct_onPause")
 
         AdsConstant.pauseResume = true
         splashHandler?.removeCallbacks(splashRunnable ?: return)
@@ -137,19 +152,17 @@ class SplashActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.e(EventLog, "SplashAct_onResume")
-        MainApplication.firebaseAnalytics?.logEvent("SplashAct_onResume", Bundle())
+        Log.e(TAG, "SplashAct_onResume")
 
         if (AdsConstant.pauseResume) {
             AdsConstant.pauseResume = false
-            splashHandler?.postDelayed(splashRunnable ?: return, 10)
+            splashHandler?.postDelayed(splashRunnable ?: return, 1000)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e(EventLog, "SplashAct_onDestroy")
-        MainApplication.firebaseAnalytics?.logEvent("SplashAct_onDestroy", Bundle())
+        Log.e(TAG, "SplashAct_onDestroy")
 
         splashHandler?.removeCallbacksAndMessages(null)
         splashHandler = null

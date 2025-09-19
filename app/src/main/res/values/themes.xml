@@ -10,16 +10,16 @@
         <item name="colorSecondaryVariant">@color/purple_200</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowBackground">@color/white</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
         <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
         <item name="android:fullDark">@color/white</item>
         <!-- Customize your theme here. -->
 
@@ -42,9 +42,9 @@
 
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
         <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
         <item name="android:fullDark">@color/white</item>
         <!-- Customize your theme here. -->
 

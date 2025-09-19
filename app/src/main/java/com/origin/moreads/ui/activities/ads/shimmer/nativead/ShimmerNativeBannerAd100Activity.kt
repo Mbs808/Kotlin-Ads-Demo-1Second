@@ -1,8 +1,6 @@
 package com.origin.moreads.ui.activities.ads.shimmer.nativead
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,10 +8,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -25,7 +21,6 @@ import com.origin.moreads.R
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivityShimmerNativeBannerAd100Binding
 import com.origin.moreads.databinding.GoogleNativeBannerAdView100CloneBinding
-import com.origin.moreads.extensions.prefsHelper
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
 import com.origin.moreads.utils.setGone
@@ -36,6 +31,7 @@ import com.origin.moreads.utils.showAdClick
 class ShimmerNativeBannerAd100Activity : BaseActivity() {
 
     private lateinit var binding: ActivityShimmerNativeBannerAd100Binding
+    private val TAG = "ShimmerNativeBannerAd100Act"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,13 +66,11 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
     override fun onDestroy() {
         binding.shimmerLayoutAd.stopShimmer()
         super.onDestroy()
-
-        Log.e(EventLog, "ShimmerNTBNAd100_onDestroy")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_onDestroy", Bundle())
+        Log.e(TAG, "ShimmerNTBNAd100_onDestroy")
     }
 
     private fun setAdView() {
-        if (AdsConstant.isConnected(this) && AdsConstant.showNativeBannerShimmer100 == "yes" ) {
+        if (AdsConstant.isConnected(this) && AdsConstant.showNativeBannerShimmer100 == "yes") {
             if (AdsConstant.onlyShowMoreAppNativeBanner == "yes") {
                 if (AdsConstant.moreAppDataList.isNotEmpty()) {
                     loadMoreAppNativeBannerAd(
@@ -85,7 +79,9 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
                         shimmerLayout = binding.shimmerLayoutAd
                     )
                 } else {
-                    binding.shimmerLayoutAd.stopShimmer()
+                    binding.shimmerLayoutAd.post {
+                        binding.shimmerLayoutAd.stopShimmer()
+                    }
                 }
             } else {
                 googleNativeBannerAd(
@@ -100,13 +96,6 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
         }
     }
 
-    private fun getAddRequest(): AdRequest {
-        val extras = Bundle().apply {
-            putString("maxAdContentRating", AdsConstant.maxAdContentRating)
-        }
-        return AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras).build()
-    }
-
     private fun googleNativeBannerAd(
         activity: Activity,
         adID: String,
@@ -114,8 +103,7 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
         shimmerLayout: ShimmerFrameLayout
     ) {
 
-        Log.e(EventLog, "ShimmerNTBNAd100_LoadStart")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_LoadStart", Bundle())
+        Log.e(TAG, "ShimmerNTBNAd100_LoadStart")
 
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             shimmerLayout.setGone()
@@ -124,8 +112,7 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(EventLog, "ShimmerNTBNAd100_Fail$loadAdError")
-                MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_Fail", Bundle())
+                Log.e(TAG, "ShimmerNTBNAd100_Fail$loadAdError")
 
                 if (AdsConstant.showMoreAppNativeBanner == "yes") {
                     if (AdsConstant.moreAppDataList.isNotEmpty()) {
@@ -137,30 +124,31 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
                             )
                         }
                     } else {
-                        shimmerLayout.stopShimmer()
+                        shimmerLayout.post {
+                            shimmerLayout.stopShimmer()
+                        }
                     }
                 } else {
-                    shimmerLayout.stopShimmer()
+                    shimmerLayout.post {
+                        shimmerLayout.stopShimmer()
+                    }
                 }
             }
 
             override fun onAdLoaded() {
-                Log.e(EventLog, "ShimmerNTBNAd100_Loaded")
-                MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_Loaded", Bundle())
+                Log.e(TAG, "ShimmerNTBNAd100_Loaded")
 
                 shimmerLayout.setGone()
             }
 
             override fun onAdClicked() {
-                Log.e(EventLog, "ShimmerNTBNAd100_Clicked")
-                MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_Clicked", Bundle())
+                Log.e(TAG, "ShimmerNTBNAd100_Clicked")
 
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
         }).build()
 
-        val request = getAddRequest()
-        adLoader.loadAd(request)
+        adLoader.loadAd(AdRequest.Builder().build())
     }
 
     private fun showNativeBanner(
@@ -169,8 +157,7 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
         shimmerLayout: ShimmerFrameLayout,
         nativeAd: NativeAd
     ) {
-        Log.e(EventLog, "ShimmerNTBNAd100_Show")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_Show", Bundle())
+        Log.e(TAG, "ShimmerNTBNAd100_Show")
 
         shimmerLayout.setGone()
 

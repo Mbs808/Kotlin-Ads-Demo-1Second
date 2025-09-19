@@ -2,7 +2,6 @@ package com.origin.moreads.ui.activities.ads.interstitialad
 
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import androidx.activity.OnBackPressedCallback
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
@@ -11,8 +10,8 @@ import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
 
 class InterstitialAdActivity : BaseActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interstitial_ad)
 
@@ -24,16 +23,16 @@ class InterstitialAdActivity : BaseActivity() {
                 Log.e(EventLog, "InterAct_onBack")
                 MainApplication.firebaseAnalytics?.logEvent("InterAct_onBack", Bundle())
 
-                GoogleInterstitialAds.showInterstitial(this@InterstitialAdActivity, "InterAct_onBack")
+                GoogleInterstitialAds.showInterstitial(
+                    this@InterstitialAdActivity,
+                    "InterAct_onBack"
+                )
 
                 finish()
             }
         })
 
-
         Log.e(EventLog, "InterAct_onCreate")
         MainApplication.firebaseAnalytics?.logEvent("InterAct_onCreate", Bundle())
     }
-
-
 }

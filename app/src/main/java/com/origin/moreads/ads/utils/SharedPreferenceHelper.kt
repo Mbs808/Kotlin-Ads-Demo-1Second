@@ -42,18 +42,11 @@ class SharedPreferenceHelper(private val context: Context) {
         }
 
 
-    var isInterShow : Boolean
-        get() = prefs.getBoolean(IS_INTER_SHOW, false)
-        set(isLanguageSelected) = prefs.edit {
-            putBoolean(IS_INTER_SHOW, isLanguageSelected)
-        }
-
     companion object {
         fun newInstance(context: Context) = SharedPreferenceHelper(context)
         // Preference Keys
         const val LANGUAGE_CODE = "LANGUAGE_CODE"
         const val IS_LANGUAGE_SELECTED = "IS_LANGUAGE_SELECTED"
-        const val IS_INTER_SHOW = "IS_INTER_SHOW"
         const val RATE_US_DIALOG_COUNTER = "RATE_US_DIALOG_COUNTER"
         const val IS_PERMISSION_NEEDED_DIALOG_SHOWED = "IS_PERMISSION_NEEDED_DIALOG_SHOWED"
         const val MORE_APP_URL = "MORE_APP_URL"

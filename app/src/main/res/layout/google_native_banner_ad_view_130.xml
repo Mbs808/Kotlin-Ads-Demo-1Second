@@ -17,8 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-android:gravity="center"
             android:baselineAligned="false"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -59,9 +59,9 @@ android:gravity="center"
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="5dp"
                     android:gravity="center"
-                    android:layout_marginBottom="5dp">
+                    android:orientation="horizontal">
 
                     <!-- AD Tag -->
                     <TextView
@@ -69,29 +69,29 @@ android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:paddingVertical="2dp"
-                        android:paddingHorizontal="3dp"
                         android:background="@drawable/bg_ad_tag"
                         android:fontFamily="sans-serif-medium"
                         android:gravity="center"
-                        android:text="AD"
-                        android:textSize="10sp"
+                        android:includeFontPadding="false"
+                        android:paddingHorizontal="3dp"
+                        android:paddingVertical="2dp"
+                        android:text="@string/ad"
                         android:textColor="@color/ad_tag_text_color"
-                        android:includeFontPadding="false" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/adName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
                         android:includeFontPadding="false"
                         android:lines="1"
-                        android:fontFamily="sans-serif-medium"
                         android:maxLines="1"
+                        android:text="@string/app_name"
                         android:textColor="@color/ad_text_primary_color"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:text="@string/app_name" />
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -105,9 +105,9 @@ android:gravity="center"
                     android:includeFontPadding="false"
                     android:lines="2"
                     android:maxLines="2"
+                    android:text="@string/install"
                     android:textColor="@color/ad_text_secondary_color"
-                    android:textSize="12sp"
-                    android:text="Install app" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -121,11 +121,11 @@ android:gravity="center"
             android:background="@drawable/bg_ad_btn"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:text="@string/app_name"
+            android:textAllCaps="true"
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="19sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:text="@string/app_name" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 

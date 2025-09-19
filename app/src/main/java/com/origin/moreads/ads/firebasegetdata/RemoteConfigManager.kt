@@ -1,6 +1,7 @@
 package com.origin.moreads.ads.firebasegetdata
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,8 +10,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.origin.moreads.MainApplication
 import com.origin.moreads.ads.adsload.MoreAppDataLoader
-import com.origin.moreads.ads.adsload.PreviewAdsLoad
+import com.origin.moreads.ads.adsload.PreviewLangAdsLoad
 import com.origin.moreads.ads.utils.AdsConstant
+import com.origin.moreads.ads.utils.UpdateDialogAction
 import com.origin.moreads.extensions.prefsHelper
 import com.origin.moreads.utils.EventLog
 import java.lang.ref.WeakReference
@@ -68,6 +70,7 @@ class RemoteConfigManager(activity: Activity) {
             }
 
             AdsConstant.isLoadedAdID = true
+
             Log.e(EventLog, "remoteData_load_success")
             MainApplication.firebaseAnalytics?.logEvent("remoteData_load_success", Bundle())
 
@@ -75,11 +78,15 @@ class RemoteConfigManager(activity: Activity) {
 
             logAdValues()
 
-            // Load more app data
+            // Load more app data if not loaded from splash
             activityRef.get()?.let {
                 if (shouldReloadMoreAppData(it)) reloadMoreAppData(it)
-                loadLanguageScreenAds(it)
             }
+
+            // preload language native ads
+//            activityRef.get()?.let {
+//                loadLanguageScreenAds(it)
+//            }
         }
     }
 
@@ -102,7 +109,6 @@ class RemoteConfigManager(activity: Activity) {
         AdsConstant.showBannerShimmer = get("showBannerShimmer")
 
         AdsConstant.playStoreLink = get("playStoreLink")
-        AdsConstant.maxAdContentRating = get("maxAdContentRating")
         AdsConstant.showBigNativeLanguage = get("showBigNativeLanguage")
         AdsConstant.showLanguageNativeAd = get("showLanguageNativeAd")
         AdsConstant.showMoreAppLanguage = get("showMoreAppLanguage")
@@ -114,6 +120,8 @@ class RemoteConfigManager(activity: Activity) {
         AdsConstant.onlyShowMoreAppNativeBanner = get("onlyShowMoreAppNativeBanner")
         AdsConstant.onlyShowMoreAppBanner = get("onlyShowMoreAppBanner")
         AdsConstant.showAdsExitDialog = get("showAdsExitDialog")
+
+        AdsConstant.updateNow = get("updateNow")
 
         AdsConstant.googleInterMaxInterAdsShow =
             get("googleInterMaxInterAdsShow").toIntOrNull() ?: 3
@@ -134,6 +142,11 @@ class RemoteConfigManager(activity: Activity) {
                 AdsConstant.moreAccountName = it
             }
         }
+
+        if (AdsConstant.updateNow == "yes") {
+            activityRef.get()?.sendBroadcast(Intent(UpdateDialogAction.SHOW_UPDATE_DIALOG))
+        }
+
     }
 
     private fun shouldReloadMoreAppData(activity: Activity): Boolean {
@@ -149,22 +162,8 @@ class RemoteConfigManager(activity: Activity) {
     }
 
     private fun loadLanguageScreenAds(activity: Activity) {
-        if (PreviewAdsLoad.isLoadingInLanguage) return
-        if (AdsConstant.showLanguageNativeAd != "yes") return
-        if (activity.prefsHelper.isLanguageSelected) return
-        if (AdsConstant.onlyShowMoreAppLanguage == "yes") return
-
-        val adUnit = if (AdsConstant.showBigNativeLanguage == "yes") {
-            AdsConstant.nativeLanguageAds
-        } else {
-            AdsConstant.nativeBannerLanguageAds
-        }
-
-        PreviewAdsLoad.isLanguageLoadingInSplash = true
-        PreviewAdsLoad.loadGoogleNativeAd(activity, adUnit) { nativeAd ->
-            PreviewAdsLoad.languageUnifiedNativeAds?.destroy()
-            PreviewAdsLoad.languageUnifiedNativeAds = nativeAd
-            PreviewAdsLoad.isLanguageAdLoadingMutableLiveData.value = nativeAd != null
+        if (AdsConstant.isConnected(activity) && !activity.prefsHelper.isLanguageSelected && AdsConstant.showLanguageNativeAd == "yes") {
+            PreviewLangAdsLoad.loadLanguageNativeAds(activity)
         }
     }
 
@@ -196,7 +195,6 @@ class RemoteConfigManager(activity: Activity) {
         Log.e(TAG, "ShowBannerShimmer::: ${AdsConstant.showBannerShimmer}")
 
         Log.e(TAG, "PlayStoreLink::: ${AdsConstant.playStoreLink}")
-        Log.e(TAG, "MaxAdContentRating::: ${AdsConstant.maxAdContentRating}")
         Log.e(TAG, "ShowBigNativeLanguage::: ${AdsConstant.showBigNativeLanguage}")
         Log.e(TAG, "ShowLanguageNativeAd::: ${AdsConstant.showLanguageNativeAd}")
         Log.e(TAG, "ShowMoreAppLanguage::: ${AdsConstant.showMoreAppLanguage}")
@@ -216,6 +214,8 @@ class RemoteConfigManager(activity: Activity) {
 
         Log.e(TAG, "MoreAppUrl::: ${AdsConstant.moreAppUrl}")
         Log.e(TAG, "MoreAccountName::: ${AdsConstant.moreAccountName}")
+
+        Log.e(TAG, "updateNow::: ${AdsConstant.updateNow}")
 
     }
 }

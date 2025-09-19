@@ -1,16 +1,21 @@
 <resources>
     <string name="app_name">KotlinFirebaseAdsDemo</string>
+    <string name="install">Install</string> <!--do not translate-->
+    <string name="ad">AD</string> <!-- do not translate-->
+
+
     <string name="splash_screen">Splash Screen</string>
     <string name="start_loading">Start Loading</string>
 
     <string name="no_browser_error">You don\'t have any browser to open web page</string>
     <string name="tap_home">Continue to Home</string>
 
+    <string name="update_msg">Looks like you\'re using an older version,\nUpdate now for less bugs batter performance,\nand the latest features.</string>
+    <string name="update_now">Update Now</string>
 
     <string name="loading">Loading…</string>
     <string name="preparing">Preparing…</string>
     <string name="ready_now">Ready now…</string>
-    <string name="install">Install</string>
     <string name="select_language">Select Language</string>
     <string name="select_language_first">Select Language First</string>
     <string name="shimmer_ads">Shimmer Ads</string>
@@ -53,8 +58,10 @@
     <string name="sorry">We\'re Sorry to See You Go</string>
     <string name="improve">Thank you for trying our app. We appreciate your feedback and will use it to improve.</string>
     <string name="ok">Ok</string>
-    <string name="ad">AD</string>
     <string name="lets">Let\'s try</string>
     <string name="reduce">We’ve reduced the ads for you!</string>
+    <string name="no_app_found">No activity found for link</string>
+    <string name="banner_Ad">Banner Ads</string>
+    <string name="back">back</string>
 
 </resources>

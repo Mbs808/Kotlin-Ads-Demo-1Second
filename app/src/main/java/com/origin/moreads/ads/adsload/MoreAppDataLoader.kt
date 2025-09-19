@@ -60,7 +60,7 @@ object MoreAppDataLoader {
                             val moreApp = response.body()
                             if (moreApp != null) {
                                 val moreAppList = moreApp.moreAppData
-                                Log.e(EventLog, "moreAppList::::: $moreAppList")
+
                                 if (!moreAppList.isNullOrEmpty()) {
                                     AdsConstant.moreAppDataList.addAll(moreAppList)
                                 }

@@ -1,6 +1,5 @@
 package com.origin.moreads.ui.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,7 +10,6 @@ import com.origin.moreads.databinding.CellLanguageItemBinding
 import com.origin.moreads.models.Language
 
 class LanguageAdapter(
-    private val context: Context,
     private val onClick: (language: Language) -> Unit
 ) : ListAdapter<Language, LanguageAdapter.LanguageViewHolder>(DiffCallback) {
 

@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
-import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -24,7 +23,6 @@ import com.origin.moreads.R
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivityShimmerNativeAdBinding
 import com.origin.moreads.databinding.GoogleNativeAdViewCloneBinding
-import com.origin.moreads.extensions.prefsHelper
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
 import com.origin.moreads.utils.setGone
@@ -35,6 +33,7 @@ import com.origin.moreads.utils.showAdClick
 class ShimmerNativeAdActivity : BaseActivity() {
 
     private lateinit var binding: ActivityShimmerNativeAdBinding
+    private val TAG = "ShimmerNativeAdAct"
 
     /** Others **/
     private var mHeight = 0
@@ -69,8 +68,7 @@ class ShimmerNativeAdActivity : BaseActivity() {
         binding.shimmerLayoutAd.stopShimmer()
         super.onDestroy()
 
-        Log.e(EventLog, "ShimmerNTVAd_onDestroy")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTVAd_onDestroy", Bundle())
+        Log.e(TAG, "ShimmerNTVAd_onDestroy")
     }
 
 
@@ -91,7 +89,9 @@ class ShimmerNativeAdActivity : BaseActivity() {
                         shimmerLayout = binding.shimmerLayoutAd
                     )
                 } else {
-                    binding.shimmerLayoutAd.stopShimmer()
+                    binding.shimmerLayoutAd.post {
+                        binding.shimmerLayoutAd.stopShimmer()
+                    }
                 }
             } else {
                 googleNativeAd(
@@ -106,12 +106,6 @@ class ShimmerNativeAdActivity : BaseActivity() {
         }
     }
 
-    private fun getAddRequest(): AdRequest {
-        val extras = Bundle().apply {
-            putString("maxAdContentRating", AdsConstant.maxAdContentRating)
-        }
-        return AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras).build()
-    }
 
     fun googleNativeAd(
         activity: Activity,
@@ -119,8 +113,7 @@ class ShimmerNativeAdActivity : BaseActivity() {
         frameLayout: FrameLayout,
         shimmerLayout: ShimmerFrameLayout
     ) {
-        Log.e(EventLog, "ShimmerNTVAd_NativeAd_LoadStart")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTVAd_NativeAd_LoadStart", Bundle())
+        Log.e(TAG, "ShimmerNTVAd_NativeAd_LoadStart")
 
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             shimmerLayout.setGone()
@@ -129,8 +122,7 @@ class ShimmerNativeAdActivity : BaseActivity() {
 
         val adLoader = builder.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                Log.e(EventLog, "ShimmerNTVAd_NativeAd_Fail$loadAdError")
-                MainApplication.firebaseAnalytics?.logEvent("ShimmerNTVAd_NativeAd_Fail", Bundle())
+                Log.e(TAG, "ShimmerNTVAd_NativeAd_Fail$loadAdError")
 
                 if (AdsConstant.showMoreAppNative == "yes") {
                     if (AdsConstant.moreAppDataList.isNotEmpty()) {
@@ -142,35 +134,31 @@ class ShimmerNativeAdActivity : BaseActivity() {
                             )
                         }
                     } else {
-                        binding.shimmerLayoutAd.stopShimmer()
+                        binding.shimmerLayoutAd.post {
+                            binding.shimmerLayoutAd.stopShimmer()
+                        }
                     }
                 } else {
-                    binding.shimmerLayoutAd.stopShimmer()
+                    binding.shimmerLayoutAd.post {
+                        binding.shimmerLayoutAd.stopShimmer()
+                    }
                 }
             }
 
             override fun onAdLoaded() {
-                Log.e(EventLog, "ShimmerNTVAd_NativeAd_Loaded")
-                MainApplication.firebaseAnalytics?.logEvent(
-                    "ShimmerNTVAd_NativeAd_Loaded",
-                    Bundle()
-                )
+                Log.e(TAG, "ShimmerNTVAd_NativeAd_Loaded")
 
                 shimmerLayout.setGone()
             }
 
             override fun onAdClicked() {
-                Log.e(EventLog, "ShimmerNTVAd_NativeAd_Clicked")
-                MainApplication.firebaseAnalytics?.logEvent(
-                    "ShimmerNTVAd_NativeAd_Clicked",
-                    Bundle()
-                )
+                Log.e(TAG, "ShimmerNTVAd_NativeAd_Clicked")
+
                 googleNativeAd(activity, adID, frameLayout, shimmerLayout)
             }
         }).build()
 
-        val request = getAddRequest()
-        adLoader.loadAd(request)
+        adLoader.loadAd(AdRequest.Builder().build())
     }
 
     private fun showNativeBanner(
@@ -180,8 +168,7 @@ class ShimmerNativeAdActivity : BaseActivity() {
         nativeAd: NativeAd
     ) {
 
-        Log.e(EventLog, "ShimmerNTVAd_NativeAd_Show")
-        MainApplication.firebaseAnalytics?.logEvent("ShimmerNTVAd_NativeAd_Show", Bundle())
+        Log.e(TAG, "ShimmerNTVAd_NativeAd_Show")
 
         shimmerLayout.setGone()
 
@@ -313,7 +300,7 @@ class ShimmerNativeAdActivity : BaseActivity() {
             Log.d(EventLog, "ShimmerNTVAd_MoreNativeAd_Show")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerNTVAd_MoreNativeAd_Show", Bundle())
         } catch (e: Exception) {
-            Log.e(EventLog, "loadMoreAppNativeAd Exception: ${e.message}", e)
+            Log.e(TAG, "loadMoreAppNativeAd Exception: ${e.message}", e)
         }
     }
 }

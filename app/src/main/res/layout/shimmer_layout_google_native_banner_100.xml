@@ -53,7 +53,7 @@
                     android:includeFontPadding="false"
                     android:paddingVertical="2dp"
                     android:paddingHorizontal="3dp"
-                    android:text="AD"
+                    android:text="@string/ad"
                     android:textColor="@color/gray1"
                     android:textSize="10sp" />
 

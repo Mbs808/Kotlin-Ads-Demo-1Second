@@ -16,7 +16,6 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext)
 
         // Initialize the Google Mobile Ads SDK on a background thread.
         CoroutineScope(Dispatchers.IO).launch {
@@ -24,6 +23,9 @@ class MainApplication : Application() {
         }
 
         FirebaseApp.initializeApp(applicationContext)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext)
+
+
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
 
         FirebaseMessaging.getInstance().token

@@ -11,8 +11,8 @@
         android:id="@+id/llMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_margin="5dp"
+        android:orientation="vertical"
         tools:ignore="UselessParent">
 
         <LinearLayout
@@ -53,17 +53,17 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="5dp"
-   android:layout_gravity="center"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="5dp"
                     android:gravity="center"
-                    android:layout_marginBottom="5dp">
+                    android:orientation="horizontal">
 
                     <!-- AD Tag -->
                     <TextView
@@ -71,32 +71,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
-                        android:paddingVertical="2dp"
-                    android:paddingHorizontal="3dp"
                         android:background="@drawable/bg_ad_tag"
                         android:fontFamily="sans-serif-medium"
                         android:gravity="center"
-                        android:text="AD"
-                        android:textSize="10sp"
+                        android:includeFontPadding="false"
+                        android:paddingHorizontal="3dp"
+                        android:paddingVertical="2dp"
+                        android:text="@string/ad"
                         android:textColor="@color/ad_tag_text_color"
-                        android:includeFontPadding="false" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/adNameClone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
                         android:includeFontPadding="false"
                         android:lines="1"
-                        android:fontFamily="sans-serif-medium"
                         android:maxLines="1"
+                        android:text="@string/app_name"
                         android:textColor="@color/ad_text_primary_color"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:text="@string/app_name" />
+                        android:textStyle="bold" />
 
                 </LinearLayout>
-
 
 
                 <TextView
@@ -107,9 +106,9 @@
                     android:includeFontPadding="false"
                     android:lines="2"
                     android:maxLines="2"
+                    android:text="@string/install"
                     android:textColor="@color/ad_text_secondary_color"
-                    android:textSize="12sp"
-                    android:text="Install app" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -123,11 +122,11 @@
             android:background="@drawable/bg_ad_btn"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:text="@string/app_name"
+            android:textAllCaps="true"
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="19sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:text="@string/app_name" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 

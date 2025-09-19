@@ -70,7 +70,7 @@
                         android:includeFontPadding="false"
                         android:paddingHorizontal="3dp"
                         android:paddingVertical="2dp"
-                        android:text="AD"
+                        android:text="@string/ad"
                         android:textColor="@color/ad_tag_text_color"
                         android:textSize="10sp" />
 
@@ -100,7 +100,7 @@
                     android:maxLines="2"
                     android:textColor="@color/ad_text_secondary_color"
                     android:textSize="11sp"
-                    android:text="Install app \n instal" />
+                    android:text="@string/install" />
             </LinearLayout>
         </LinearLayout>
 

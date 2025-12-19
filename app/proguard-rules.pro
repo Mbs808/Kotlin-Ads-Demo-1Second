@@ -214,7 +214,6 @@
 
 
 # My Customize
--keep class com.origin.moreads.** {*;}
 -keep class com.origin.moreads.models.** {*;}
 
 -obfuscationdictionary "C:\Users\mehul\AppData\Local\Android\Sdk\tools\class_encode_dictionary.txt"

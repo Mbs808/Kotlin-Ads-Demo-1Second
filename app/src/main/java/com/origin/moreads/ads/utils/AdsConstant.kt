@@ -86,6 +86,7 @@ object AdsConstant {
     var pauseResume = false
 
 
+
     fun isConnected(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager

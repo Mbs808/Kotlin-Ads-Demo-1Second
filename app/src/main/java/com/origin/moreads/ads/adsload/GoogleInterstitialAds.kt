@@ -79,7 +79,6 @@ object GoogleInterstitialAds {
     }
 
     fun showInterstitial(activity: Activity, from: String) {
-
         if (originalAdsShown >= AdsConstant.googleInterMaxInterAdsShow) {
             Log.e(TAG, "showInterstitial ::--- show max---")
             return

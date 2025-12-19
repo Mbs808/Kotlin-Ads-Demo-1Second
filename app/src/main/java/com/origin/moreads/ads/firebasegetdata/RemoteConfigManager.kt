@@ -74,63 +74,99 @@ class RemoteConfigManager(activity: Activity) {
             Log.e(EventLog, "remoteData_load_success")
             MainApplication.firebaseAnalytics?.logEvent("remoteData_load_success", Bundle())
 
+            /** Update ads constants from firebase **/
             updateAdConstants(remoteConfig)
 
+            /** Log ads constants **/
             logAdValues()
 
-            // Load more app data if not loaded from splash
-            activityRef.get()?.let {
-                if (shouldReloadMoreAppData(it)) reloadMoreAppData(it)
-            }
-
-            // preload language native ads
-//            activityRef.get()?.let {
-//                loadLanguageScreenAds(it)
-//            }
         }
     }
 
     private fun updateAdConstants(config: FirebaseRemoteConfig) {
         fun get(key: String): String = config.getString(key).trim()
 
-        AdsConstant.interstitialAds = get("interstitialAds")
-        AdsConstant.nativeAds = get("nativeAds")
-        AdsConstant.nativeBannerAds = get("nativeBannerAds")
-        AdsConstant.bannerAds = get("bannerAds")
-        AdsConstant.nativeLanguageAds = get("nativeLanguageAds")
-        AdsConstant.nativeBannerLanguageAds = get("nativeBannerLanguageAds")
-        AdsConstant.nativeExitDialogAds = get("nativeExitDialogAds")
+        val interstitialAds = get("interstitialAds")
+        val nativeAds = get("nativeAds")
+        val nativeBannerAds = get("nativeBannerAds")
+        val bannerAds = get("bannerAds")
+        val nativeLanguageAds = get("nativeLanguageAds")
+        val nativeBannerLanguageAds = get("nativeBannerLanguageAds")
+        val nativeExitDialogAds = get("nativeExitDialogAds")
 
-        AdsConstant.showNativeShimmer = get("showNativeShimmer")
-        AdsConstant.showNativeBannerShimmer130 = get("showNativeBannerShimmer130")
-        AdsConstant.showNativeBannerShimmer100 = get("showNativeBannerShimmer100")
-        AdsConstant.showNativeBannerShimmer80 = get("showNativeBannerShimmer80")
-        AdsConstant.showNativeBannerShimmer60 = get("showNativeBannerShimmer60")
-        AdsConstant.showBannerShimmer = get("showBannerShimmer")
+        val showNativeShimmer = get("showNativeShimmer")
+        val showNativeBannerShimmer130 = get("showNativeBannerShimmer130")
+        val showNativeBannerShimmer100 = get("showNativeBannerShimmer100")
+        val showNativeBannerShimmer80 = get("showNativeBannerShimmer80")
+        val showNativeBannerShimmer60 = get("showNativeBannerShimmer60")
+        val showBannerShimmer = get("showBannerShimmer")
 
-        AdsConstant.playStoreLink = get("playStoreLink")
-        AdsConstant.showBigNativeLanguage = get("showBigNativeLanguage")
-        AdsConstant.showLanguageNativeAd = get("showLanguageNativeAd")
-        AdsConstant.showMoreAppLanguage = get("showMoreAppLanguage")
-        AdsConstant.onlyShowMoreAppLanguage = get("onlyShowMoreAppLanguage")
-        AdsConstant.showMoreAppNative = get("showMoreAppNative")
-        AdsConstant.showMoreAppNativeBanner = get("showMoreAppNativeBanner")
-        AdsConstant.showMoreAppBanner = get("showMoreAppBanner")
-        AdsConstant.onlyShowMoreAppNative = get("onlyShowMoreAppNative")
-        AdsConstant.onlyShowMoreAppNativeBanner = get("onlyShowMoreAppNativeBanner")
-        AdsConstant.onlyShowMoreAppBanner = get("onlyShowMoreAppBanner")
-        AdsConstant.showAdsExitDialog = get("showAdsExitDialog")
+        val playStoreLink = get("playStoreLink")
+        val showBigNativeLanguage = get("showBigNativeLanguage")
+        val showLanguageNativeAd = get("showLanguageNativeAd")
+        val showMoreAppLanguage = get("showMoreAppLanguage")
+        val onlyShowMoreAppLanguage = get("onlyShowMoreAppLanguage")
+        val showMoreAppNative = get("showMoreAppNative")
+        val showMoreAppNativeBanner = get("showMoreAppNativeBanner")
+        val showMoreAppBanner = get("showMoreAppBanner")
+        val onlyShowMoreAppNative = get("onlyShowMoreAppNative")
+        val onlyShowMoreAppNativeBanner = get("onlyShowMoreAppNativeBanner")
+        val onlyShowMoreAppBanner = get("onlyShowMoreAppBanner")
+        val showAdsExitDialog = get("showAdsExitDialog")
 
-        AdsConstant.updateNow = get("updateNow")
+        val updateNow = get("updateNow")
 
-        AdsConstant.googleInterMaxInterAdsShow =
-            get("googleInterMaxInterAdsShow").toIntOrNull() ?: 3
-        AdsConstant.googleInterGapBetweenTwoInter =
-            get("googleInterGapBetweenTwoInter").toIntOrNull() ?: 2
-        AdsConstant.googleInterCountDownTimer =
-            get("googleInterCountDownTimer").toLongOrNull() ?: 10000L
-        AdsConstant.firstTime = get("firstTime").toBoolean()
+        val googleInterMaxInterAdsShow = get("googleInterMaxInterAdsShow")
+        val googleInterGapBetweenTwoInter = get("googleInterGapBetweenTwoInter")
+        val googleInterCountDownTimer = get("googleInterCountDownTimer")
+        val firstTime = get("firstTime")
 
+        // Assign only when non-empty
+        if (interstitialAds.isNotEmpty()) AdsConstant.interstitialAds = interstitialAds
+        if (nativeAds.isNotEmpty()) AdsConstant.nativeAds = nativeAds
+        if (nativeBannerAds.isNotEmpty()) AdsConstant.nativeBannerAds = nativeBannerAds
+        if (bannerAds.isNotEmpty()) AdsConstant.bannerAds = bannerAds
+        if (nativeLanguageAds.isNotEmpty()) AdsConstant.nativeLanguageAds = nativeLanguageAds
+        if (nativeBannerLanguageAds.isNotEmpty()) AdsConstant.nativeBannerLanguageAds = nativeBannerLanguageAds
+        if (nativeExitDialogAds.isNotEmpty()) AdsConstant.nativeExitDialogAds = nativeExitDialogAds
+
+        if (showNativeShimmer.isNotEmpty()) AdsConstant.showNativeShimmer = showNativeShimmer
+        if (showNativeBannerShimmer130.isNotEmpty()) AdsConstant.showNativeBannerShimmer130 = showNativeBannerShimmer130
+        if (showNativeBannerShimmer100.isNotEmpty()) AdsConstant.showNativeBannerShimmer100 = showNativeBannerShimmer100
+        if (showNativeBannerShimmer80.isNotEmpty()) AdsConstant.showNativeBannerShimmer80 = showNativeBannerShimmer80
+        if (showNativeBannerShimmer60.isNotEmpty()) AdsConstant.showNativeBannerShimmer60 = showNativeBannerShimmer60
+        if (showBannerShimmer.isNotEmpty()) AdsConstant.showBannerShimmer = showBannerShimmer
+
+        if (playStoreLink.isNotEmpty()) AdsConstant.playStoreLink = playStoreLink
+        if (showBigNativeLanguage.isNotEmpty()) AdsConstant.showBigNativeLanguage = showBigNativeLanguage
+        if (showLanguageNativeAd.isNotEmpty()) AdsConstant.showLanguageNativeAd = showLanguageNativeAd
+        if (showMoreAppLanguage.isNotEmpty()) AdsConstant.showMoreAppLanguage = showMoreAppLanguage
+        if (onlyShowMoreAppLanguage.isNotEmpty()) AdsConstant.onlyShowMoreAppLanguage = onlyShowMoreAppLanguage
+        if (showMoreAppNative.isNotEmpty()) AdsConstant.showMoreAppNative = showMoreAppNative
+        if (showMoreAppNativeBanner.isNotEmpty()) AdsConstant.showMoreAppNativeBanner = showMoreAppNativeBanner
+        if (showMoreAppBanner.isNotEmpty()) AdsConstant.showMoreAppBanner = showMoreAppBanner
+        if (onlyShowMoreAppNative.isNotEmpty()) AdsConstant.onlyShowMoreAppNative = onlyShowMoreAppNative
+        if (onlyShowMoreAppNativeBanner.isNotEmpty()) AdsConstant.onlyShowMoreAppNativeBanner = onlyShowMoreAppNativeBanner
+        if (onlyShowMoreAppBanner.isNotEmpty()) AdsConstant.onlyShowMoreAppBanner = onlyShowMoreAppBanner
+        if (showAdsExitDialog.isNotEmpty()) AdsConstant.showAdsExitDialog = showAdsExitDialog
+
+        if (updateNow.isNotEmpty()) AdsConstant.updateNow = updateNow
+
+        if (googleInterMaxInterAdsShow.isNotEmpty()) {
+            AdsConstant.googleInterMaxInterAdsShow = googleInterMaxInterAdsShow.toIntOrNull() ?: 3
+        }
+
+        if (googleInterGapBetweenTwoInter.isNotEmpty()) {
+            AdsConstant.googleInterGapBetweenTwoInter = googleInterGapBetweenTwoInter.toIntOrNull() ?: 2
+        }
+
+        if (googleInterCountDownTimer.isNotEmpty()) {
+            AdsConstant.googleInterCountDownTimer = googleInterCountDownTimer.toLongOrNull() ?: 10000L
+        }
+
+        if (firstTime.isNotEmpty()) AdsConstant.firstTime = firstTime.toBoolean()
+
+        // SharedPreferences updates
         activityRef.get()?.prefsHelper?.apply {
             get("moreAppUrl").let {
                 if (it.isNotEmpty() && it != moreAppUrl) moreAppUrl = it
@@ -143,9 +179,20 @@ class RemoteConfigManager(activity: Activity) {
             }
         }
 
+        /** Trigger update dialog if needed **/
         if (AdsConstant.updateNow == "yes") {
             activityRef.get()?.sendBroadcast(Intent(UpdateDialogAction.SHOW_UPDATE_DIALOG))
         }
+
+        /** Load more app data if not loaded from splash **/
+        activityRef.get()?.let {
+            if (shouldReloadMoreAppData(it)) reloadMoreAppData(it)
+        }
+
+        /** preload language native ads **/
+//        activityRef.get()?.let {
+//            loadLanguageScreenAds(it)
+//        }
 
     }
 

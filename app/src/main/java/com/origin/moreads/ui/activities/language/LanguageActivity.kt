@@ -312,6 +312,7 @@ class LanguageActivity : BaseActivity() {
         binding.rlBigNative.setVisible()
         binding.shimmerLayoutBigAd.setVisible()
 
+
         val view = binding.languageShimmer.shimmerAdMediaHolder
         val params = view.layoutParams
         val targetHeight = maxOf(mHeight / 5, 300)
@@ -332,7 +333,7 @@ class LanguageActivity : BaseActivity() {
             } else {
                 Log.e(TAG, "LanguageAct:--BigAd fail--------")
 
-                if (AdsConstant.moreAppDataList.isNotEmpty()) {
+                if (AdsConstant.moreAppDataList.isNotEmpty() && AdsConstant.showMoreAppLanguage == "yes") {
                     Log.e(TAG, "LanguageAct:--BigAd show more app--------")
 
                     loadMoreAppNativeAd(
@@ -368,6 +369,7 @@ class LanguageActivity : BaseActivity() {
         binding.rlSmallNativeBanner.setVisible()
         binding.shimmerLayoutAd.setVisible()
 
+
         loaded?.let {
             if (it) {
                 PreviewLangAdsLoad.languageUnifiedNativeAds?.let { ad ->
@@ -378,7 +380,7 @@ class LanguageActivity : BaseActivity() {
             } else {
                 Log.e(TAG, "LanguageAct:--SmallAd fail-------")
 
-                if (AdsConstant.moreAppDataList.isNotEmpty()) {
+                if (AdsConstant.moreAppDataList.isNotEmpty() && AdsConstant.showMoreAppLanguage == "yes") {
                     Log.e(TAG, "LanguageAct:--SmallAd show more app-------")
 
                     loadMoreAppNativeBannerAd(
@@ -535,12 +537,18 @@ class LanguageActivity : BaseActivity() {
         shimmerLayoutAd.setGone()
 
         val adView = if (AdsConstant.showBigNativeLanguage == "yes") {
+
+            binding.rlSmallNativeBanner.setGone()
+
             activity.layoutInflater.inflate(
                 R.layout.google_native_ad_view,
                 activity.findViewById(R.id.nativeAd),
                 false
             ) as NativeAdView
         } else {
+
+            binding.rlBigNative.setGone()
+
             activity.layoutInflater.inflate(
                 R.layout.google_native_banner_ad_view_130,
                 activity.findViewById(R.id.nativeAd),

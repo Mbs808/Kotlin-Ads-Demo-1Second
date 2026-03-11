@@ -11,13 +11,14 @@
         android:id="@+id/llMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="3dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
+            android:layout_marginHorizontal="10dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -101,6 +102,7 @@
                     android:ellipsize="end"
                     android:fontFamily="sans-serif"
                     android:includeFontPadding="false"
+                    android:textAlignment="viewStart"
                     android:lines="2"
                     android:maxLines="2"
                     android:textColor="@color/ad_text_secondary_color"

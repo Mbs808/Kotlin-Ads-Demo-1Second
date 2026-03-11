@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
 import com.origin.moreads.ads.UpdateDialogManager
+import com.origin.moreads.ads.adsload.AppOpenManager
 import com.origin.moreads.ads.adsload.GoogleInterstitialAds
 import com.origin.moreads.ads.adsload.MoreAppDataLoader
 import com.origin.moreads.ads.adsload.PreviewLangAdsLoad
@@ -56,6 +57,8 @@ class SplashActivity : BaseActivity() {
                 )
             }
         }
+
+        AppOpenManager.appOpenAd = null
 
         handleAdsStates()
 

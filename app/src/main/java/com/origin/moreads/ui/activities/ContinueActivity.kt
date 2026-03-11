@@ -48,7 +48,6 @@ class ContinueActivity : BaseActivity() {
 //            PreviewLangAdsLoad.loadLanguageNativeAds(this)
 //        }
 
-
         setPolicyText()
 
         binding.continueLottie.setOnClickListener {

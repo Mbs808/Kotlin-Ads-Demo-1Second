@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -22,12 +21,15 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.drawable.toDrawable
 import com.bumptech.glide.Glide
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -45,7 +47,9 @@ import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
+import com.origin.moreads.ads.adsload.AppOpenManager
 import com.origin.moreads.ads.adsload.GoogleInterstitialAds
+import com.origin.moreads.ads.adsload.PreviewLangAdsLoad
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivityMainBinding
 import com.origin.moreads.databinding.DialogExitWithAdBinding
@@ -66,15 +70,15 @@ import com.origin.moreads.utils.IS_FROM
 import com.origin.moreads.utils.PERMISSION_REQUEST_NOTIFICATION_ARRAY
 import com.origin.moreads.utils.PERMISSION_REQUEST_NOTIFICATION_LIST
 import com.origin.moreads.utils.SETTING_ACTIVITY
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
 import com.origin.moreads.utils.showAdClick
 
 class MainActivity : BaseActivity() {
-
     private val TAG = "MainAct"
-
 
     /***** Dialogs *****/
     private var permissionNeededDialog: PermissionNeededDialog? = null
@@ -91,7 +95,6 @@ class MainActivity : BaseActivity() {
     private var reviewManager: ReviewManager? = null
     private var reviewInfo: ReviewInfo? = null
 
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,10 +104,18 @@ class MainActivity : BaseActivity() {
 
         /***** Initial Load Google Interstitial Ads *****/
         if (AdsConstant.isConnected(this)) {
+
             if (!AdsConstant.isSplashInterCall) {
                 GoogleInterstitialAds.loadInterstitial(this)
             }
+
+            /***** Initial Load App Open Ads *****/
+            if (AppOpenManager.appOpenAd == null) {
+                AppOpenManager(application as MainApplication)
+            }
+
         }
+
 
         /** Rate us dialog show at app open counter of 2*/
         if (prefsHelper.rateUsDialogCounter == 2) {
@@ -159,7 +170,11 @@ class MainActivity : BaseActivity() {
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (hasAllPermissions(PERMISSION_REQUEST_NOTIFICATION_LIST)) {
                     prefsHelper.rateUsDialogCounter += 1
+                    AdsConstant.isPermissionDialogShowed = false
+
                 } else {
+                    AppOpenManager.isShowingOpenAds = true
+
                     openSettingDialog?.show()
                 }
             }
@@ -168,14 +183,19 @@ class MainActivity : BaseActivity() {
     private fun subscribePermissionContract() {
         permissionLauncherForNotification =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+
                 val granted = permissions.entries.all { it.value }
                 if (granted) {
+                    AdsConstant.isPermissionDialogShowed = false
+
                     prefsHelper.rateUsDialogCounter += 1
                 } else {
                     if (!prefsHelper.isPermissionNeededDialogShowed) {
                         prefsHelper.isPermissionNeededDialogShowed = true
+                        AppOpenManager.isShowingOpenAds = true
                         permissionNeededDialog?.show()
                     } else {
+                        AppOpenManager.isShowingOpenAds = true
                         openSettingDialog?.show()
                     }
                 }
@@ -207,6 +227,10 @@ class MainActivity : BaseActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestPermissionForNotification() {
+        AppOpenManager.isShowingOpenAds = true
+
+        AdsConstant.isPermissionDialogShowed = true
+
         permissionLauncherForNotification?.launch(PERMISSION_REQUEST_NOTIFICATION_ARRAY)
     }
 
@@ -325,12 +349,32 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.e(TAG, "MainAct_onPause")
+
+        exitAdsDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+
+        permissionNeededDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+
+        openSettingDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()
-
         Log.e(TAG, "MainAct_onResume")
-
 
         appUpdateManager?.let { updateManager ->
             updateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -363,6 +407,35 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        exitAdsDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+
+        permissionNeededDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+
+        openSettingDialog?.let {
+            if (!isFinishing && it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            }
+        }
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+
+            val isExitDialogShowing = exitAdsDialog?.isShowing == true && !isFinishing
+
+            if (isExitDialogShowing) {
+                AppOpenManager.isShowingOpenAds = true
+            } else {
+                openAdsShow(false, "MainAct_onResume")
+            }
+        }
     }
 
     override fun onStop() {
@@ -458,8 +531,16 @@ class MainActivity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "MainAct_NativeBanner_Clicked")
 
+                openAdsGone("MainAct_NativeBanner_Clicked")
 
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
+            }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "MainAct_NativeBanner_onAdOpened")
+
+                openAdsGone("MainAct_NativeBanner_onAdOpened")
+
             }
         }).build()
 
@@ -566,6 +647,9 @@ class MainActivity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.e(EventLog, "MainAct_MoreNativeBanner_Click")
             MainApplication.firebaseAnalytics?.logEvent("MainAct_MoreNativeBanner_Click", Bundle())
+
+            openAdsGone("MainAct_MoreNativeBanner_Click")
+
             showAdClick(activity, adData.appLink.toString())
         }
 
@@ -583,7 +667,9 @@ class MainActivity : BaseActivity() {
 
     //exit dialog with ads
     private var mHeight = 0
-    private lateinit var exitAdsDialog: BottomSheetDialog
+    private var exitAdsDialog: BottomSheetDialog? = null
+    private var shimmerExit: ShimmerFrameLayout? = null
+    var isExitAdsFail = false
 
     private fun exitAdsDialogInit() {
         mHeight = resources.displayMetrics.heightPixels
@@ -591,23 +677,30 @@ class MainActivity : BaseActivity() {
 
         val backBinding = DialogExitWithAdBinding.inflate(layoutInflater)
 
-        exitAdsDialog.apply {
+        exitAdsDialog?.apply {
             setContentView(backBinding.root)
             setCanceledOnTouchOutside(true)
 
             window?.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
 
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
             window?.setGravity(Gravity.BOTTOM)
 
             val shimmerHolder = backBinding.exitShimmer.shimmerAdMediaHolder
+
+            shimmerExit = backBinding.shimmerLayoutAd
 
             val params = shimmerHolder.layoutParams
             params.height = maxOf(mHeight / 5, 300)
             params.width = ViewGroup.LayoutParams.MATCH_PARENT
             shimmerHolder.layoutParams = params
+
+            setOnDismissListener {
+                AppOpenManager.isShowingOpenAds = false
+            }
 
             if (AdsConstant.isConnected(this@MainActivity) && AdsConstant.showAdsExitDialog == "yes") {
                 if (AdsConstant.onlyShowMoreAppNative == "yes") {
@@ -618,6 +711,7 @@ class MainActivity : BaseActivity() {
                             backBinding.shimmerLayoutAd
                         )
                     } else {
+                        isExitAdsFail = true
                         backBinding.shimmerLayoutAd.post {
                             backBinding.shimmerLayoutAd.stopShimmer()
                         }
@@ -635,11 +729,12 @@ class MainActivity : BaseActivity() {
             }
 
             backBinding.btnTapToExit.setOnClickListener {
+                AppOpenManager.appOpenAd = null
+
                 dismiss()
                 finishAffinity()
             }
         }
-
     }
 
     fun loadGoogleNativeExitAd(
@@ -653,7 +748,6 @@ class MainActivity : BaseActivity() {
         val builder = AdLoader.Builder(activity, adID).forNativeAd { nativeAd ->
             shimmerLayout.visibility = View.GONE
             showNativeExit(activity, frameLayout, shimmerLayout, nativeAd)
-
         }
 
         val adLoader = builder.withAdListener(object : AdListener() {
@@ -676,6 +770,8 @@ class MainActivity : BaseActivity() {
                                     )
                                 }
                             } else {
+                                isExitAdsFail = true
+
                                 shimmerLayout.post {
                                     shimmerLayout.stopShimmer()
                                 }
@@ -684,6 +780,8 @@ class MainActivity : BaseActivity() {
 
                     }
                 } else {
+                    isExitAdsFail = true
+
                     shimmerLayout.post {
                         shimmerLayout.stopShimmer()
                     }
@@ -697,8 +795,18 @@ class MainActivity : BaseActivity() {
 
             override fun onAdClicked() {
                 Log.e(TAG, "Exit_onAdClicked")
+
+                openAdsGone("Exit_onAdClicked")
+
                 loadGoogleNativeExitAd(activity, adID, frameLayout, shimmerLayout)
             }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "Exit_onAdOpened")
+
+                openAdsGone("Exit_onAdOpened")
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -843,6 +951,9 @@ class MainActivity : BaseActivity() {
         val onClickListener = View.OnClickListener {
             Log.e(EventLog, "MainAct_More_Native_Click")
             MainApplication.firebaseAnalytics?.logEvent("MainAct_More_Native_Click", Bundle())
+
+            openAdsGone("MainAct_More_Native_Click")
+
             showAdClick(activity, adData.appLink ?: "")
         }
 
@@ -853,13 +964,20 @@ class MainActivity : BaseActivity() {
         MainApplication.firebaseAnalytics?.logEvent("MainAct_More_Native_Show", Bundle())
     }
 
-
     private fun showExitAdsDialog() {
-        if (!exitAdsDialog.isShowing) {
-            if (!isFinishing) {
-                exitAdsDialog.show()
+        exitAdsDialog?.let {
+            if (!isFinishing && !it.isShowing) {
+                AppOpenManager.isShowingOpenAds = true
+                it.show()
+
+                if (isExitAdsFail) {
+                    shimmerExit?.post {
+                        shimmerExit?.stopShimmer()
+                    }
+                }
             }
         }
+
     }
 
 }

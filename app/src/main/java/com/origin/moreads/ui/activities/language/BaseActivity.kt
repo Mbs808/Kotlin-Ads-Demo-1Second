@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.origin.moreads.ads.UpdateDialogManager
 import com.origin.moreads.ads.utils.AdsConstant
@@ -21,11 +22,14 @@ open class BaseActivity : AppCompatActivity() {
         val langCode = prefs.getString("LANGUAGE_CODE", "en")
 
         val localeUpdatedContext = updateLocaleContext(newBase,langCode)
+
         super.attachBaseContext(localeUpdatedContext)
     }
 
     private fun updateLocaleContext(context: Context, langCode: String?): Context {
         if (langCode.isNullOrEmpty()) return context
+
+        Log.e("TAG", "updateLocaleContext:::----langCode-----$langCode " )
 
         val locale = Locale(langCode)
         Locale.setDefault(locale)
@@ -39,6 +43,7 @@ open class BaseActivity : AppCompatActivity() {
     private val updateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == UpdateDialogAction.SHOW_UPDATE_DIALOG) {
+                Log.e("TAG", "onReceive:::---111------- ", )
                 UpdateDialogManager.showUpdateDialog(this@BaseActivity)
             }
         }
@@ -48,6 +53,8 @@ open class BaseActivity : AppCompatActivity() {
         super.onResume()
 
         if (AdsConstant.updateNow == "yes" && !isFinishing) {
+            Log.e("TAG", "onReceive:::---222------- ", )
+
             UpdateDialogManager.showUpdateDialog(this)
         }
 
@@ -56,6 +63,13 @@ open class BaseActivity : AppCompatActivity() {
         } else {
             registerReceiver(updateReceiver, IntentFilter(UpdateDialogAction.SHOW_UPDATE_DIALOG))
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        UpdateDialogManager.currentDialog?.dismiss()
+        UpdateDialogManager.currentDialog = null
     }
 
     override fun onPause() {

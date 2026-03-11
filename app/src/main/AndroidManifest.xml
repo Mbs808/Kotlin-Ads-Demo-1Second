@@ -31,7 +31,6 @@
 
         <activity
             android:name=".ui.activities.main.MainActivity"
-            android:configChanges="uiMode"
             android:exported="true"
             android:screenOrientation="nosensor" />
 
@@ -39,76 +38,58 @@
             android:shell="true"
             tools:targetApi="29" />
 
-        <!-- For use remove fullscreen inter ads -->
-        <!--        <activity-->
-        <!--            android:name="com.google.android.gms.ads.AdActivity"-->
-        <!--            android:exported="false"-->
-        <!--            android:theme="@style/AdInspectorActivityTheme"-->
-        <!--            tools:replace="android:theme" />-->
-
         <activity
             android:name=".ui.activities.ContinueActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd60Activity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd80Activity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd100Activity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeBannerAd130Activity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.nativead.ShimmerNativeAdActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.bannerad.ShimmerBannerAdActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.shimmer.ShimmerAdsActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.ads.interstitialad.InterstitialAdActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.language.LanguageActivity"
-            android:configChanges="uiMode"
             android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name=".ui.activities.SplashActivity"
-            android:configChanges="uiMode"
             android:exported="true"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.KotlinFirebaseAdsDemoSplash">
@@ -117,8 +98,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
+        <receiver
+            android:name=".ads.receiver.ScreenStateReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".ads.service.FirebaseMSGService"

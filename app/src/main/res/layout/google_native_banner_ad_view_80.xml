@@ -13,13 +13,13 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="5dp">
+        android:layout_marginHorizontal="10dp"
+        android:paddingHorizontal="3dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardAdIcon"
@@ -99,6 +99,7 @@
                 android:includeFontPadding="false"
                 android:lines="2"
                 android:maxLines="2"
+                android:textAlignment="viewStart"
                 android:text="@string/install"
                 android:textColor="@color/ad_text_secondary_color"
                 android:textSize="12sp" />

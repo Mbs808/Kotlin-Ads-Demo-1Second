@@ -3,6 +3,7 @@ package com.origin.moreads.ads
 import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
+import android.util.Log
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -15,9 +16,17 @@ object UpdateDialogManager {
     var currentDialog: Dialog? = null
 
     fun showUpdateDialog(activity: Activity) {
+        Log.e("TAG", "onReceive:::---333------- ", )
+
         if (activity.isFinishing) return
+        Log.e("TAG", "onReceive:::---444------- ", )
+
         if (currentDialog?.isShowing == true) return
+        Log.e("TAG", "onReceive:::---5555------- ", )
+
         if (AdsConstant.updateNow != "yes") return
+        Log.e("TAG", "onReceive:::---666------- ", )
+
 
         currentDialog = Dialog(activity).apply {
             setContentView(R.layout.update_dialog)

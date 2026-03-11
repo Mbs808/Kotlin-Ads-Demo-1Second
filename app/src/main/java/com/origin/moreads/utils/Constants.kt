@@ -4,14 +4,16 @@ import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import com.origin.moreads.R
+import com.origin.moreads.ads.adsload.AppOpenManager
 import com.origin.moreads.ads.utils.AdsConstant
 
 // Variable Route
@@ -49,6 +51,21 @@ fun View.setGone() {
     visibility = View.GONE
 }
 
+
+fun openAdsShow(isShow: Boolean, str: String?) {
+    Log.e("TAG", "openAdsShow:::--str----$str------isShow---::$isShow " )
+    Handler(Looper.getMainLooper()).postDelayed({
+        AppOpenManager.isShowingOpenAds = isShow
+    }, 500)
+}
+
+fun openAdsGone(str: String?) {
+    Log.e("TAG", "openAdsGone:::--str----$str " )
+    AdsConstant.isAnyAdsClick = true
+    AppOpenManager.isShowingOpenAds = true
+}
+
+
 fun showAdClick(activity: Activity, link: String?) {
     if (link.isNullOrBlank()) {
         Log.e("TAG", "Ad link is null or empty")
@@ -60,9 +77,12 @@ fun showAdClick(activity: Activity, link: String?) {
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
+        openAdsGone("ShimmerBNRAd_MoreBanner_Click")
+
         activity.startActivity(intent)
     } catch (e: ActivityNotFoundException) {
-        Toast.makeText(activity, activity.getString(R.string.no_app_found), Toast.LENGTH_SHORT).show()
+        Toast.makeText(activity, activity.getString(R.string.no_app_found), Toast.LENGTH_SHORT)
+            .show()
         Log.e("TAG", "No activity found for link: $link", e)
     } catch (e: Exception) {
         Log.e("TAG", "Error opening ad link: $link", e)
@@ -77,7 +97,8 @@ fun gotoPlayStore(activity: Activity) {
     } catch (e: java.lang.Exception) {
         e.printStackTrace()
         val linkString: String = AdsConstant.playStoreLink
-        val defaultBrowser = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER)
+        val defaultBrowser =
+            Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER)
         defaultBrowser.setData(linkString.toUri())
         activity.startActivity(defaultBrowser)
     }

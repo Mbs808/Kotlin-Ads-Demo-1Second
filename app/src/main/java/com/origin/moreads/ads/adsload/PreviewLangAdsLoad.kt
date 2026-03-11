@@ -9,6 +9,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
 import com.origin.moreads.ads.utils.AdsConstant
+import com.origin.moreads.utils.openAdsGone
 
 object PreviewLangAdsLoad {
     private const val TAG = "lang_native--"
@@ -84,6 +85,14 @@ object PreviewLangAdsLoad {
                 Log.e(TAG, "PreviewLangAdsLoad_Clicked")
                 AdsConstant.isAdsClick = true
             }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "PreviewLangAdsLoad_onAdOpened")
+                openAdsGone("PreviewLangAdsLoad_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())

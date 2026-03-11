@@ -25,6 +25,8 @@ import com.origin.moreads.databinding.ActivityShimmerNativeAdBinding
 import com.origin.moreads.databinding.GoogleNativeAdViewCloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -71,6 +73,16 @@ class ShimmerNativeAdActivity : BaseActivity() {
         Log.e(TAG, "ShimmerNTVAd_onDestroy")
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "ShimmerNTVAd_onResume")
+
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false, "ShimmerNTVAd_onResume")
+        }
+    }
 
     private fun setAdView() {
         mHeight = resources.displayMetrics.heightPixels
@@ -154,7 +166,15 @@ class ShimmerNativeAdActivity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "ShimmerNTVAd_NativeAd_Clicked")
 
+                openAdsGone("ShimmerNTVAd_NativeAd_Clicked")
                 googleNativeAd(activity, adID, frameLayout, shimmerLayout)
+            }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "ShimmerNTVAd_NativeAd_onAdOpened")
+
+                openAdsGone("ShimmerNTVAd_NativeAd_onAdOpened")
+
             }
         }).build()
 
@@ -291,6 +311,9 @@ class ShimmerNativeAdActivity : BaseActivity() {
                     "ShimmerNTVAd_MoreNativeAd_Click",
                     Bundle()
                 )
+
+                openAdsGone("ShimmerNTVAd_MoreNativeAd_Click")
+
                 showAdClick(activity, adData.appLink.toString())
             }
 

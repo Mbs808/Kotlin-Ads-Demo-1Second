@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="4dp">
+        android:padding="3dp">
 
         <!-- Row: Icon + Title + Body -->
         <LinearLayout
@@ -20,6 +20,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="3dp"
             android:layout_weight="1"
+            android:layout_marginHorizontal="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -94,7 +95,7 @@
                     android:id="@+id/adBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:textAlignment="viewStart"
                     android:ellipsize="end"
                     android:includeFontPadding="false"
                     android:maxLines="2"
@@ -111,6 +112,7 @@
             android:layout_height="38dp"
             android:background="@drawable/bg_ad_btn"
             android:gravity="center"
+            android:layout_marginHorizontal="10dp"
             android:includeFontPadding="false"
             android:textAllCaps="true"
             android:textColor="@color/ad_btn_primary_color"

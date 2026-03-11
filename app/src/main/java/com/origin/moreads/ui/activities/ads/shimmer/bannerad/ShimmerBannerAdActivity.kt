@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -23,13 +24,13 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
-import com.origin.moreads.ads.firebasegetdata.RemoteConfigManager
-import com.origin.moreads.ads.firebasegetdata.RemoteConfigManager.Companion
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivityShimmerBannerAdBinding
 import com.origin.moreads.databinding.GoogleBannerAdViewCloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setVisible
 import com.origin.moreads.utils.showAdClick
@@ -37,7 +38,6 @@ import com.origin.moreads.utils.showAdClick
 class ShimmerBannerAdActivity : BaseActivity() {
 
     private val TAG = "ShimmerBannerAdAct"
-
 
     private lateinit var binding: ActivityShimmerBannerAdBinding
 
@@ -59,10 +59,6 @@ class ShimmerBannerAdActivity : BaseActivity() {
         }
 
         setAdView()
-
-        binding.ivBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -132,12 +128,18 @@ class ShimmerBannerAdActivity : BaseActivity() {
                 hideNavigationBar(window)
             }
         }
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false,"ShimmerBNRAd_onResume")
+        }
     }
 
     private fun setAdView() {
         if (AdsConstant.isConnected(this) && AdsConstant.showBannerShimmer == "yes") {
             if (AdsConstant.onlyShowMoreAppBanner == "yes") {
                 if (AdsConstant.moreAppDataList.isNotEmpty()) {
+
                     loadMoreAppBannerAd(
                         activity = this,
                         frameLayout = binding.flBanner,
@@ -153,7 +155,8 @@ class ShimmerBannerAdActivity : BaseActivity() {
                     activity = this,
                     adID = AdsConstant.bannerAds,
                     frameLayout = binding.flBanner,
-                    shimmerLayout = binding.shimmerLayoutAd
+                    shimmerLayout = binding.shimmerLayoutAd,
+                    linear = binding.incShimmer.llBannerShimmer
                 )
             }
         } else {
@@ -165,24 +168,32 @@ class ShimmerBannerAdActivity : BaseActivity() {
         activity: Activity,
         adID: String,
         frameLayout: FrameLayout,
-        shimmerLayout: ShimmerFrameLayout
+        shimmerLayout: ShimmerFrameLayout,
+        linear: LinearLayout
     ) {
         Log.e(TAG, "ShimmerBNRAd_BannerLoadStart")
 
         val adViewGoogle = AdView(activity)
         adViewGoogle.adUnitId = adID
-        frameLayout.addView(adViewGoogle)
-        val adSize = getAdSize(activity, frameLayout)
 
+        val adSize = AdSize.BANNER
         adViewGoogle.setAdSize(adSize)
+        Log.e(TAG, "googleBannerAd: :---adSize---$adSize", )
 
-        val adRequest = AdRequest.Builder().build()
-        adViewGoogle.loadAd(adRequest)
+        frameLayout.removeAllViews()
+        frameLayout.addView(adViewGoogle)
+        // Get height in pixels
+        val adHeight = adSize.getHeightInPixels(this)
+
+        Log.e(TAG, "googleBannerAd: :---adHeight---$adHeight", )
+        // Set shimmer height
+        val layoutParams = linear.layoutParams as FrameLayout.LayoutParams
+        layoutParams.height = adHeight
+        linear.layoutParams = layoutParams
 
         adViewGoogle.adListener = object : AdListener() {
             override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                 Log.e(TAG, "ShimmerBNRAd_Banner_fail$loadAdError")
-
                 if (AdsConstant.showMoreAppBanner == "yes") {
                     if (AdsConstant.moreAppDataList.isNotEmpty()) {
                         if (!activity.isFinishing) {
@@ -207,7 +218,6 @@ class ShimmerBannerAdActivity : BaseActivity() {
             override fun onAdLoaded() {
                 Log.e(TAG, "ShimmerBNRAd_Banner_Loaded")
 
-
                 frameLayout.setVisible()
                 shimmerLayout.stopShimmer()
                 shimmerLayout.setGone()
@@ -218,26 +228,12 @@ class ShimmerBannerAdActivity : BaseActivity() {
 
                 isAdsClicked = true
 
-
-            }
-        }
-    }
-
-    private fun getAdSize(activity: Activity, frameLayout: FrameLayout): AdSize {
-        val density = activity.resources.displayMetrics.density
-        var adWidthPixels = frameLayout.width
-
-        if (adWidthPixels == 0) {
-            adWidthPixels = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val windowMetrics = activity.windowManager.currentWindowMetrics
-                windowMetrics.bounds.width()
-            } else {
-                activity.resources.displayMetrics.widthPixels
+                openAdsGone("ShimmerBNRAd_Banner_Clicked")
             }
         }
 
-        val adWidth = (adWidthPixels / density).toInt()
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
+        val adRequest = AdRequest.Builder().build()
+        adViewGoogle.loadAd(adRequest)
     }
 
     private fun loadMoreAppBannerAd(
@@ -279,6 +275,9 @@ class ShimmerBannerAdActivity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.e(EventLog, "ShimmerBNRAd_MoreBanner_Click")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerBNRAd_MoreBanner_Click", Bundle())
+
+            openAdsGone("ShimmerBNRAd_MoreBanner_Click")
+
             showAdClick(activity, adData.appLink ?: "")
         }
 

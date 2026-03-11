@@ -4,30 +4,38 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.origin.moreads.R
-import com.origin.moreads.ads.firebasegetdata.RemoteConfigManager
 import com.origin.moreads.ads.model.MoreAppData
 import com.origin.moreads.models.Language
 
 object AdsConstant {
 
+    /** App Open Ad Variables **/
+    var AppOpenAds = "ca-app-pub-3940256099942544/9257395921"
+
     /** Interstitial Ad Server Variables **/
     var interstitialAds = "ca-app-pub-3940256099942544/1033173712"
 
     /** Native Server Variables **/
-    var nativeAds = "ca-app-pub-3940256099942544/2247696110"
+//    var nativeAds = "ca-app-pub-3940256099942544/2247696110"
+    var nativeAds = "/21775744923/example/native"
 
     /** Native Banner Server Variables **/
-    var nativeBannerAds = "ca-app-pub-3940256099942544/2247696110"
+//    var nativeBannerAds = "ca-app-pub-3940256099942544/2247696110"
+    var nativeBannerAds = "/21775744923/example/native"
 
     /** Banner Ad Server Variables **/
-    var bannerAds = "ca-app-pub-3940256099942544/6300978111"
+//    var bannerAds = "ca-app-pub-3940256099942544/6300978111"
+    var bannerAds = "ca-app-pub-3940256099942544/9214589741"
 
     /** Language Ad Server Variables **/
-    var nativeLanguageAds = "ca-app-pub-3940256099942544/2247696110"
-    var nativeBannerLanguageAds = "ca-app-pub-3940256099942544/2247696110"
+//    var nativeLanguageAds = "ca-app-pub-3940256099942544/2247696110"
+    var nativeLanguageAds = "/21775744923/example/native"
+//    var nativeBannerLanguageAds = "ca-app-pub-3940256099942544/2247696110"
+    var nativeBannerLanguageAds = "/21775744923/example/native"
 
     /** Exit Dialog Native Ad Server Variables **/
-    var nativeExitDialogAds = "ca-app-pub-3940256099942544/2247696110"
+//    var nativeExitDialogAds = "ca-app-pub-3940256099942544/2247696110"
+    var nativeExitDialogAds = "/21775744923/example/native"
 
     /*** Sub: Shimmer Google Ads Variables ***/
     var showNativeShimmer = "yes"
@@ -42,6 +50,11 @@ object AdsConstant {
     var playStoreLink = "https://play.google.com/store/apps/details?id="
 
     var isAdsClick = false
+
+    var isAnyAdsClick = false
+    var isInterAdsShowed = false
+
+    var isPermissionDialogShowed = false
 
     /** Sub: Global Local Variables **/
     var isSplashInterCall = false

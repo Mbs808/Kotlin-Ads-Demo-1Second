@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nativeAd"
     android:layout_width="match_parent"
-    android:layout_height="65dp"
+    android:layout_height="60dp"
     android:background="@color/ad_bg_color">
 
     <LinearLayout
@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="6dp">
+        android:layout_marginHorizontal="10dp"
+        android:paddingHorizontal="3dp">
 
         <!-- Icon -->
         <com.google.android.material.card.MaterialCardView
@@ -92,6 +93,7 @@
                 android:fontFamily="sans-serif"
                 android:includeFontPadding="false"
                 android:maxLines="2"
+                android:textAlignment="viewStart"
                 android:text="@string/install"
                 android:textColor="@color/ad_text_secondary_color"
                 android:textSize="12sp" />

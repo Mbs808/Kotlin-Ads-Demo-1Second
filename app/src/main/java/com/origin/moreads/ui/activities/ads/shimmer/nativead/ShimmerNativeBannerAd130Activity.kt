@@ -23,6 +23,8 @@ import com.origin.moreads.databinding.ActivityShimmerNativeBannerAd130Binding
 import com.origin.moreads.databinding.GoogleNativeBannerAdView130CloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -69,6 +71,18 @@ class ShimmerNativeBannerAd130Activity : BaseActivity() {
 
         Log.e(TAG, "ShimmerNTBNAd130_onDestroy")
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "ShimmerNTBNAd130_onResume")
+
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false, "ShimmerNTBNAd130_onResume")
+        }
+    }
+
 
     private fun setAdView() {
         if (AdsConstant.isConnected(this) && AdsConstant.showNativeBannerShimmer130 == "yes") {
@@ -145,8 +159,19 @@ class ShimmerNativeBannerAd130Activity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "ShimmerNTBNAd130_Clicked")
 
+                openAdsGone("ShimmerNTBNAd130_Clicked")
+
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "ShimmerNTBNAd130_onAdOpened")
+
+                openAdsGone("ShimmerNTBNAd130_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -253,6 +278,9 @@ class ShimmerNativeBannerAd130Activity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.e(EventLog, "ShimmerNTBNAd130_More_Click")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd130_More_Click", Bundle())
+
+            openAdsGone("ShimmerNTBNAd130_More_Click")
+
             showAdClick(activity, adData.appLink.toString())
         }
 

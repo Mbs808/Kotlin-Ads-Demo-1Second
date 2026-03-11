@@ -23,6 +23,8 @@ import com.origin.moreads.databinding.ActivityShimmerNativeBannerAd80Binding
 import com.origin.moreads.databinding.GoogleNativeBannerAdView80CloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -67,6 +69,17 @@ class ShimmerNativeBannerAd80Activity : BaseActivity() {
         binding.shimmerLayoutAd.stopShimmer()
         super.onDestroy()
         Log.e(TAG, "ShimmerNTBNAd80_onDestroy")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "ShimmerNTBNAd80_onResume")
+
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false, "ShimmerNTBNAd80_onResume")
+        }
     }
 
     private fun setAdView() {
@@ -146,8 +159,18 @@ class ShimmerNativeBannerAd80Activity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "ShimmerNTBNAd80_Clicked")
 
+                openAdsGone("ShimmerNTBNAd80_Clicked")
+
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "ShimmerNTBNAd80_onAdOpened")
+
+                openAdsGone("ShimmerNTBNAd80_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -251,6 +274,10 @@ class ShimmerNativeBannerAd80Activity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.e(EventLog, "ShimmerNTBNAd80_More_Click")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd80_More_Click", Bundle())
+
+            openAdsGone("ShimmerNTBNAd80_More_Click")
+
+
             showAdClick(activity, adData.appLink.toString())
         }
 

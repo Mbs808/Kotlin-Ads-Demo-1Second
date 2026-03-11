@@ -10,6 +10,8 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import com.origin.moreads.R
+import androidx.core.graphics.drawable.toDrawable
+import com.origin.moreads.ads.adsload.AppOpenManager
 
 class PermissionNeededDialog(
     activity: Activity,
@@ -26,13 +28,18 @@ class PermissionNeededDialog(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
-        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         setCancelable(false)
         setCanceledOnTouchOutside(false)
         setContentView(R.layout.dialog_permission_needed)
 
+        setOnDismissListener {
+            AppOpenManager.isShowingOpenAds = false
+        }
+
         initView()
         clickEvents()
+
 
     }
 
@@ -45,6 +52,7 @@ class PermissionNeededDialog(
         ivClose?.setOnClickListener {
             dismiss()
         }
+
         btnRequestPermission?.setOnClickListener {
             onConfirmClick.invoke()
             dismiss()

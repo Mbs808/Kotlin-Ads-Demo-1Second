@@ -23,6 +23,8 @@ import com.origin.moreads.databinding.ActivityShimmerNativeBannerAd60Binding
 import com.origin.moreads.databinding.GoogleNativeBannerAdView60CloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -68,6 +70,18 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
 
         Log.e(TAG, "ShimmerNTBNAd60_onDestroy")
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "ShimmerNTBNAd60_onResume")
+
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false, "ShimmerNTBNAd60_onResume")
+        }
+    }
+
 
     private fun setAdView() {
         if (AdsConstant.isConnected(this) && AdsConstant.showNativeBannerShimmer60 == "yes" ) {
@@ -143,7 +157,19 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "ShimmerNTBNAd60_Clicked")
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
+
+                openAdsGone("ShimmerNTBNAd60_Clicked")
+
             }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "ShimmerNTBNAd60_onAdOpened")
+
+                openAdsGone("ShimmerNTBNAd60_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -247,6 +273,9 @@ class ShimmerNativeBannerAd60Activity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.d(EventLog, "ShimmerNTBNAd60_More_Click")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd60_More_Click", Bundle())
+
+            openAdsGone("ShimmerNTBNAd60_More_Click")
+
             showAdClick(activity, adData.appLink.toString())
         }
 

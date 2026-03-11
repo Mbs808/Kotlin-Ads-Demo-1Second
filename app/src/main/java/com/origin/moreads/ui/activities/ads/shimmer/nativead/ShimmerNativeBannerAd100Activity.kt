@@ -23,6 +23,8 @@ import com.origin.moreads.databinding.ActivityShimmerNativeBannerAd100Binding
 import com.origin.moreads.databinding.GoogleNativeBannerAdView100CloneBinding
 import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
+import com.origin.moreads.utils.openAdsGone
+import com.origin.moreads.utils.openAdsShow
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -68,6 +70,18 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
         super.onDestroy()
         Log.e(TAG, "ShimmerNTBNAd100_onDestroy")
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "ShimmerNTBNAd100_onResume")
+
+
+        if (AdsConstant.isAnyAdsClick) {
+            AdsConstant.isAnyAdsClick = false
+            openAdsShow(false, "ShimmerNTBNAd100_onResume")
+        }
+    }
+
 
     private fun setAdView() {
         if (AdsConstant.isConnected(this) && AdsConstant.showNativeBannerShimmer100 == "yes") {
@@ -144,8 +158,18 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "ShimmerNTBNAd100_Clicked")
 
+                openAdsGone("ShimmerNTBNAd100_Clicked")
+
                 googleNativeBannerAd(activity, adID, frameLayout, shimmerLayout)
             }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "ShimmerNTBNAd100_onAdOpened")
+
+                openAdsGone("ShimmerNTBNAd100_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -248,6 +272,10 @@ class ShimmerNativeBannerAd100Activity : BaseActivity() {
         val clickListener = View.OnClickListener {
             Log.e(EventLog, "ShimmerNTBNAd100_More_Click")
             MainApplication.firebaseAnalytics?.logEvent("ShimmerNTBNAd100_More_Click", Bundle())
+
+            openAdsGone("ShimmerNTBNAd100_More_Click")
+
+
             showAdClick(activity, adData.appLink.toString())
         }
 

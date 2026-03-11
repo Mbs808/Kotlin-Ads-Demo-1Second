@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,7 +12,8 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="5dp"
+        android:paddingHorizontal="3dp"
+        android:layout_marginHorizontal="10dp"
         tools:ignore="UselessParent">
 
         <LinearLayout
@@ -38,9 +38,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@null"
                     tools:src="@mipmap/ic_launcher" />
-
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
 
         <LinearLayout
@@ -50,15 +48,13 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:gravity="center"
                 android:orientation="horizontal">
-
-                <!-- AD Tag -->
+                <!--  AD Tag  -->
                 <TextView
                     android:id="@+id/tvAdTag"
                     android:layout_width="wrap_content"
@@ -67,8 +63,8 @@
                     android:background="@drawable/bg_ad_tag"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:paddingVertical="2dp"
                     android:paddingHorizontal="3dp"
+                    android:paddingVertical="2dp"
                     android:text="@string/ad"
                     android:textColor="@color/ad_tag_text_color"
                     android:textSize="10sp" />
@@ -81,12 +77,11 @@
                     android:includeFontPadding="false"
                     android:lines="1"
                     android:maxLines="1"
+                    android:text="@string/app_name"
                     android:textColor="@color/ad_text_primary_color"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="@string/app_name" />
+                    android:textStyle="bold" />
             </LinearLayout>
-
 
             <TextView
                 android:id="@+id/adBodyClone"
@@ -95,11 +90,11 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:lines="2"
+                android:textAlignment="viewStart"
                 android:maxLines="2"
+                android:text="@string/install"
                 android:textColor="@color/ad_text_secondary_color"
-                android:textSize="12sp"
-                android:text="@string/install"/>
-
+                android:textSize="12sp" />
         </LinearLayout>
 
         <TextView
@@ -112,12 +107,10 @@
             android:includeFontPadding="false"
             android:paddingHorizontal="10dp"
             android:singleLine="true"
+            android:text="@string/install"
             android:textAllCaps="true"
             android:textColor="@color/ad_btn_primary_color"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:text="@string/install" />
-
+            android:textStyle="bold" />
     </LinearLayout>
-
 </LinearLayout>

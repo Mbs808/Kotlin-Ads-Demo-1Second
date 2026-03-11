@@ -26,6 +26,7 @@ import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.origin.moreads.MainApplication
 import com.origin.moreads.R
+import com.origin.moreads.ads.adsload.AppOpenManager
 import com.origin.moreads.ads.adsload.PreviewLangAdsLoad
 import com.origin.moreads.ads.utils.AdsConstant
 import com.origin.moreads.databinding.ActivityLanguageBinding
@@ -38,6 +39,7 @@ import com.origin.moreads.ui.adapters.LanguageAdapter
 import com.origin.moreads.utils.EventLog
 import com.origin.moreads.utils.IS_FROM
 import com.origin.moreads.utils.SETTING_ACTIVITY
+import com.origin.moreads.utils.openAdsGone
 import com.origin.moreads.utils.setGone
 import com.origin.moreads.utils.setInvisible
 import com.origin.moreads.utils.setVisible
@@ -73,6 +75,8 @@ class LanguageActivity : BaseActivity() {
         /** get value from shared preference **/
         languageCode = prefsHelper.languageCode
         AdsConstant.isAdsClick = false
+
+        AppOpenManager.isShowingOpenAds = true
 
         initializeViews()
         prepareRVForLanguages()
@@ -191,6 +195,8 @@ class LanguageActivity : BaseActivity() {
         super.onResume()
         Log.e(TAG, "LanguageAct_onResume")
 
+        AppOpenManager.isShowingOpenAds = true
+
         if (AdsConstant.isAdsClick) {
             AdsConstant.isAdsClick = false
             binding.llContainer.setVisible()
@@ -203,7 +209,10 @@ class LanguageActivity : BaseActivity() {
         if (upDownAnimator != null && upDownAnimator!!.isRunning) {
             upDownAnimator!!.cancel()
         }
+
         super.onDestroy()
+
+        AppOpenManager.isShowingOpenAds = false
 
         Log.e(TAG, "LanguageAct_onDestroy")
 
@@ -247,7 +256,6 @@ class LanguageActivity : BaseActivity() {
                     Log.e(TAG, "LanguageAct:-----onlyShowMoreApp-----")
 
                     if (AdsConstant.showBigNativeLanguage == "yes") {
-
                         binding.rlBigNative.setVisible()
                         binding.shimmerLayoutBigAd.setVisible()
 
@@ -260,7 +268,9 @@ class LanguageActivity : BaseActivity() {
                                 width = ViewGroup.LayoutParams.MATCH_PARENT
                                 view.layoutParams = this
                             }
+
                         }
+
                         if (AdsConstant.moreAppDataList.isNotEmpty()) {
                             loadMoreAppNativeAd(
                                 activity = this,
@@ -272,6 +282,7 @@ class LanguageActivity : BaseActivity() {
                                 binding.shimmerLayoutBigAd.stopShimmer()
                             }
                         }
+
                     } else {
                         binding.rlSmallNativeBanner.setVisible()
                         binding.shimmerLayoutAd.setVisible()
@@ -299,7 +310,6 @@ class LanguageActivity : BaseActivity() {
                             showSmallAd(loadedFromSplash)
                         }
                     }
-
                 }
             } else {
                 binding.rlSmallNativeBanner.setGone()
@@ -311,7 +321,6 @@ class LanguageActivity : BaseActivity() {
     private fun showBigAd(loaded: Boolean?) {
         binding.rlBigNative.setVisible()
         binding.shimmerLayoutBigAd.setVisible()
-
 
         val view = binding.languageShimmer.shimmerAdMediaHolder
         val params = view.layoutParams
@@ -368,7 +377,6 @@ class LanguageActivity : BaseActivity() {
     private fun showSmallAd(loaded: Boolean?) {
         binding.rlSmallNativeBanner.setVisible()
         binding.shimmerLayoutAd.setVisible()
-
 
         loaded?.let {
             if (it) {
@@ -465,7 +473,17 @@ class LanguageActivity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "LanguageAct_NativeAd_Clicked")
                 AdsConstant.isAdsClick = true
+
+                openAdsGone("LanguageAct_NativeBanner_onAdOpened")
+
             }
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "LanguageAct_NativeAd_onAdOpened")
+                openAdsGone("LanguageAct_NativeAd_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -521,7 +539,19 @@ class LanguageActivity : BaseActivity() {
             override fun onAdClicked() {
                 Log.e(TAG, "LanguageAct_NativeBanner_Clicked")
                 AdsConstant.isAdsClick = true
+
+                openAdsGone("LanguageAct_NativeBanner_onAdOpened")
+
             }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                Log.e(TAG, "LanguageAct_NativeBanner_onAdOpened")
+
+                openAdsGone("LanguageAct_NativeBanner_onAdOpened")
+
+            }
+
         }).build()
 
         adLoader.loadAd(AdRequest.Builder().build())
@@ -573,6 +603,7 @@ class LanguageActivity : BaseActivity() {
         adView.bodyView = adView.findViewById(R.id.adBody)
 
         if (AdsConstant.showBigNativeLanguage == "yes") {
+
             val mediaView = adView.findViewById<MediaView>(R.id.adMedia)
             val params = mediaView.layoutParams
 
@@ -581,8 +612,10 @@ class LanguageActivity : BaseActivity() {
             } else {
                 params.height = 300
             }
+
             params.width = ViewGroup.LayoutParams.MATCH_PARENT
             mediaView.layoutParams = params
+
             mediaView.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
                 override fun onChildViewAdded(parent: View?, child: View?) {
                     if (child is ImageView) {

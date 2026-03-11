@@ -23,10 +23,12 @@ class OpenSettingDialog(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+
         window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
+
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setCancelable(false)
         setCanceledOnTouchOutside(false)

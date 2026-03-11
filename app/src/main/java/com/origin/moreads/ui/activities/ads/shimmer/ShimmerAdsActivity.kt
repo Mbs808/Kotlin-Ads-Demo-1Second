@@ -16,7 +16,6 @@ import com.origin.moreads.ui.activities.language.BaseActivity
 import com.origin.moreads.utils.EventLog
 
 class ShimmerAdsActivity : BaseActivity() {
-    private val TAG = "ShimmerAdsAct"
 
     private lateinit var binding: ActivityShimmerAdsBinding
 

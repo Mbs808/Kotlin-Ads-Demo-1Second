@@ -47,7 +47,6 @@
 
         </RelativeLayout>
 
-
     </RelativeLayout>
 
     <TextView
@@ -55,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginHorizontal="5dp"
-        android:background="@drawable/bg_off_white_ripple_25"
+        android:background="@drawable/bg_off_white_ripple_new"
         android:gravity="center"
         android:includeFontPadding="false"
         android:text="@string/tap_to_exit"

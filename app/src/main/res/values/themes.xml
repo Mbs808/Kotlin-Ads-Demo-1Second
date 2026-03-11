@@ -21,6 +21,10 @@
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
         <item name="android:fullDark">@color/white</item>
+
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+
         <!-- Customize your theme here. -->
 
     </style>
@@ -39,6 +43,9 @@
         <item name="android:windowBackground">@drawable/background_splash</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
 
         <item name="selectableItemBackground">?android:selectableItemBackground</item>
         <item name="android:windowLightStatusBar">true</item>

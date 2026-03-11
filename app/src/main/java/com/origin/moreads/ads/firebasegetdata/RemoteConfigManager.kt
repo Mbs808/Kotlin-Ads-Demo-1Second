@@ -87,9 +87,11 @@ class RemoteConfigManager(activity: Activity) {
         fun get(key: String): String = config.getString(key).trim()
 
         val interstitialAds = get("interstitialAds")
+        val appOpenAd = get("AppOpenAds")
+
         val nativeAds = get("nativeAds")
         val nativeBannerAds = get("nativeBannerAds")
-        val bannerAds = get("bannerAds")
+        val bannerAd = get("bannerAds")
         val nativeLanguageAds = get("nativeLanguageAds")
         val nativeBannerLanguageAds = get("nativeBannerLanguageAds")
         val nativeExitDialogAds = get("nativeExitDialogAds")
@@ -123,9 +125,13 @@ class RemoteConfigManager(activity: Activity) {
 
         // Assign only when non-empty
         if (interstitialAds.isNotEmpty()) AdsConstant.interstitialAds = interstitialAds
+        if (appOpenAd.isNotEmpty()) AdsConstant.AppOpenAds = appOpenAd
+
         if (nativeAds.isNotEmpty()) AdsConstant.nativeAds = nativeAds
         if (nativeBannerAds.isNotEmpty()) AdsConstant.nativeBannerAds = nativeBannerAds
-        if (bannerAds.isNotEmpty()) AdsConstant.bannerAds = bannerAds
+
+        if (bannerAd.isNotEmpty()) AdsConstant.bannerAds = bannerAd
+
         if (nativeLanguageAds.isNotEmpty()) AdsConstant.nativeLanguageAds = nativeLanguageAds
         if (nativeBannerLanguageAds.isNotEmpty()) AdsConstant.nativeBannerLanguageAds = nativeBannerLanguageAds
         if (nativeExitDialogAds.isNotEmpty()) AdsConstant.nativeExitDialogAds = nativeExitDialogAds
@@ -227,6 +233,8 @@ class RemoteConfigManager(activity: Activity) {
 
     private fun logAdValues() {
         Log.e(TAG, "Interstitial::: ${AdsConstant.interstitialAds}")
+        Log.e(TAG, "AppOpenAds::: ${AdsConstant.AppOpenAds}")
+
         Log.e(TAG, "Native::: ${AdsConstant.nativeAds}")
         Log.e(TAG, "NativeBanner::: ${AdsConstant.nativeBannerAds}")
         Log.e(TAG, "Banner::: ${AdsConstant.bannerAds}")

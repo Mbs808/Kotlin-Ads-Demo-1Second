@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:layout_marginHorizontal="10dp"
+    android:padding="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,7 +91,7 @@
         android:layout_height="48dp"
         app:cardBackgroundColor="@color/shimmer_effect_color"
         app:cardCornerRadius="50dp"
-        android:layout_marginHorizontal="15dp"
+        android:layout_marginHorizontal="5dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/shimmer_effect_color"
         app:strokeWidth="0dp" />

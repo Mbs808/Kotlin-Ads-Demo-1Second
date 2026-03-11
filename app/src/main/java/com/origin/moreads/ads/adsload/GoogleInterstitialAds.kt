@@ -22,7 +22,6 @@ object GoogleInterstitialAds {
     private var adDisplayAttempts = 0
     private var isTimerRunning = false
 
-
     fun loadInterstitial(activity: Activity) {
         if (originalAdsShown >= AdsConstant.googleInterMaxInterAdsShow) {
             Log.e(TAG, "Max interstitial ads shown.")
@@ -32,6 +31,7 @@ object GoogleInterstitialAds {
         AdsConstant.isSplashInterCall = true
 
         Log.e(TAG, "InterAds_request_load")
+
         InterstitialAd.load(
             activity,
             AdsConstant.interstitialAds,
@@ -47,14 +47,21 @@ object GoogleInterstitialAds {
                         override fun onAdShowedFullScreenContent() {
                             Log.e(TAG, "InterAds_AdShowedFull")
 
-                            AdsConstant.firstTime = true
+                            /**  Skip OpenAds when inter show **/
+                            AppOpenManager.isShowingOpenAds = true
+                            AdsConstant.isInterAdsShowed = true
 
+                            AdsConstant.firstTime = true
                             originalAdsShown++
                             loadInterstitial(activity)
                         }
 
                         override fun onAdDismissedFullScreenContent() {
                             Log.e(TAG, "InterAds_AdDismissedFull")
+
+                            /**  Skip OpenAds when inter show **/
+                            AppOpenManager.isShowingOpenAds = false
+                            AdsConstant.isInterAdsShowed = false
 
                             startCooldownTimer()
                         }
@@ -130,6 +137,4 @@ object GoogleInterstitialAds {
             }
         }.start()
     }
-
-
 }

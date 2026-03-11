@@ -11,8 +11,9 @@
         android:id="@+id/llMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginHorizontal="10dp"
         android:orientation="vertical"
+        android:paddingHorizontal="3dp"
         tools:ignore="UselessParent">
 
         <LinearLayout
@@ -97,7 +98,6 @@
 
                 </LinearLayout>
 
-
                 <TextView
                     android:id="@+id/adBodyClone"
                     android:layout_width="match_parent"
@@ -106,6 +106,7 @@
                     android:includeFontPadding="false"
                     android:lines="2"
                     android:maxLines="2"
+                    android:textAlignment="viewStart"
                     android:text="@string/install"
                     android:textColor="@color/ad_text_secondary_color"
                     android:textSize="12sp" />
